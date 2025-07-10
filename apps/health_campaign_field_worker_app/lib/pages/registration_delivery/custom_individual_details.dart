@@ -856,7 +856,7 @@ class CustomIndividualDetailsPageState
                             }
                           },
                         ),
-                        if (!widget.isHeadOfHousehold)
+                        /*  if (!widget.isHeadOfHousehold)
                           DigitButton(
                             capitalizeLetters: false,
                             label: localizations.translate(
@@ -880,7 +880,7 @@ class CustomIndividualDetailsPageState
                                 ),
                               );
                             },
-                          ),
+                          ),*/
                         if (!widget.isHeadOfHousehold)
                           Text(
                               localizations.translate(i18_local
