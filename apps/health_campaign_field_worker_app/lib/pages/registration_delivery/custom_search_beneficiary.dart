@@ -270,7 +270,9 @@ class _CustomSearchBeneficiaryPageState
                                   Padding(
                                     padding: const EdgeInsets.all(spacer2),
                                     child: DigitSearchBar(
-                                      inputFormatters: [UpperCaseTextFormatter()],
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter()
+                                      ],
                                       controller: searchController,
                                       icon: const SizedBox.shrink(),
                                       hintText: (RegistrationDeliverySingleton()
@@ -761,7 +763,7 @@ class _CustomSearchBeneficiaryPageState
                     );
                   },
                 ),
-                BlocBuilder<CustomSearchHouseholdsBloc,
+                /* BlocBuilder<CustomSearchHouseholdsBloc,
                     CustomSearchHouseholdsState>(
                   builder: (context, searchHouseholdsState) {
                     return DigitButton(
@@ -788,7 +790,7 @@ class _CustomSearchBeneficiaryPageState
                       },
                     );
                   },
-                ),
+                ),*/
               ]),
         ),
       ),
@@ -892,34 +894,34 @@ class _CustomSearchBeneficiaryPageState
   }
 
   String customGetStatus(String selectedFilter) {
-  final statusMap = {
-    Status.delivered.toValue(): Status.delivered,
-    Status.notAdministered.toValue(): Status.notAdministered,
-    Status.visited.toValue(): Status.visited,
-    Status.notVisited.toValue(): Status.notVisited,
-    Status.beneficiaryRefused.toValue(): Status.beneficiaryRefused,
-    Status.beneficiaryReferred.toValue(): Status.beneficiaryReferred,
-    Status.administeredSuccess.toValue(): Status.administeredSuccess,
-    Status.administeredFailed.toValue(): Status.administeredFailed,
-    Status.inComplete.toValue(): Status.inComplete,
-    Status.toAdminister.toValue(): Status.toAdminister,
-    Status.closeHousehold.toValue(): Status.closeHousehold,
-    Status.registered.toValue(): Status.registered,
-    Status.notRegistered.toValue(): Status.notRegistered,
-    Status.beneficiaryInEligible.toValue(): Status.beneficiaryInEligible,
-  };
+    final statusMap = {
+      Status.delivered.toValue(): Status.delivered,
+      Status.notAdministered.toValue(): Status.notAdministered,
+      Status.visited.toValue(): Status.visited,
+      Status.notVisited.toValue(): Status.notVisited,
+      Status.beneficiaryRefused.toValue(): Status.beneficiaryRefused,
+      Status.beneficiaryReferred.toValue(): Status.beneficiaryReferred,
+      Status.administeredSuccess.toValue(): Status.administeredSuccess,
+      Status.administeredFailed.toValue(): Status.administeredFailed,
+      Status.inComplete.toValue(): Status.inComplete,
+      Status.toAdminister.toValue(): Status.toAdminister,
+      Status.closeHousehold.toValue(): Status.closeHousehold,
+      Status.registered.toValue(): Status.registered,
+      Status.notRegistered.toValue(): Status.notRegistered,
+      Status.beneficiaryInEligible.toValue(): Status.beneficiaryInEligible,
+    };
 
-  var mappedStatus = statusMap.entries
-      .where((element) => element.value.name == selectedFilter)
-      .first
-      .key;
-  print('mappedStatus: $mappedStatus and selectedFilter: $selectedFilter');
-  if (mappedStatus != null) {
-    return mappedStatus;
-  } else {
-    return selectedFilter;
+    var mappedStatus = statusMap.entries
+        .where((element) => element.value.name == selectedFilter)
+        .first
+        .key;
+    print('mappedStatus: $mappedStatus and selectedFilter: $selectedFilter');
+    if (mappedStatus != null) {
+      return mappedStatus;
+    } else {
+      return selectedFilter;
+    }
   }
-}
 
   void triggerGlobalSearchEvent({bool isPagination = false}) {
     if (!isPagination) {
@@ -928,7 +930,8 @@ class _CustomSearchBeneficiaryPageState
       );
     }
 
-    if (searchController.text.trim().length < 3 && !isProximityEnabled && 
+    if (searchController.text.trim().length < 3 &&
+        !isProximityEnabled &&
         selectedFilters.isEmpty) {
       customSearchHouseholdsBloc.add(
         const SearchHouseholdsClearEvent(),
@@ -937,7 +940,8 @@ class _CustomSearchBeneficiaryPageState
     } else {
       if (RegistrationDeliverySingleton().beneficiaryType ==
           BeneficiaryType.individual) {
-        if (isProximityEnabled && searchController.text.trim().length < 3 &&
+        if (isProximityEnabled &&
+            searchController.text.trim().length < 3 &&
             selectedFilters.isEmpty) {
           customSearchHouseholdsBloc.add(
             const SearchHouseholdsLoadingEvent(),
@@ -972,7 +976,8 @@ class _CustomSearchBeneficiaryPageState
                 isPagination ? customSearchHouseholdsBloc.state.limit : limit,
             // householdType: RegistrationDeliverySingleton().householdType,
           )));
-          print("searchouseholdsBloc.state.offset: ${customSearchHouseholdsBloc.state}");
+          print(
+              "searchouseholdsBloc.state.offset: ${customSearchHouseholdsBloc.state}");
         } else if (searchController.text.trim().length >= 3) {
           customSearchHouseholdsBloc.add(
             const SearchHouseholdsLoadingEvent(),
