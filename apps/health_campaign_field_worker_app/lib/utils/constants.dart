@@ -128,7 +128,6 @@ class Constants {
   static const String refusals = "refusals";
   static const String tablet_3_11 = "tablet_3_11";
   static const String tablet_12_59 = "tablet_12_59";
-  static const String zeroDose = 'zeroDose';
 
   // todo enable before cycle2
   static const bool isDownSyncEnabled = false;

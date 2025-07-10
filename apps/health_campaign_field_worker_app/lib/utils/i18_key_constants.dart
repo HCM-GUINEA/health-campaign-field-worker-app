@@ -169,9 +169,6 @@ class HouseholdOverView {
   String get householdOverViewSMCAssessmentActionText =>
       'HOUSEHOLD_OVER_VIEW_SMC_ASSESSMENT_ACTION_TEXT';
 
-  String get householdOverViewZeroDoseActionText =>
-      'HOUSEHOLD_OVER_VIEW_ZERO_DOSE_ACTION_TEXT';
-
   String get householdOverViewVASAssessmentActionText =>
       'HOUSEHOLD_OVER_VIEW_VAS_ASSESSMENT_ACTION_TEXT';
 
@@ -191,13 +188,6 @@ class HouseholdOverView {
       'HOUSEHOLD_OVER_VIEW_BENEFICIARY_INELIGIBLE_SMC_LABEL';
   String get householdOverViewBeneficiaryInEligibleVASLabel =>
       'HOUSEHOLD_OVER_VIEW_BENEFICIARY_INELIGIBLE_VAS_LABEL';
-
-  String get householdOverViewZeroDoseIconLabel =>
-      'HOUSEHOLD_OVER_VIEW_ZERO_DOSE_ICON_LABEL';
-  String get householdOverViewIncompletementVaccineLabel =>
-      'HOUSEHOLD_OVER_VIEW_INCOMPLETEMENT_VACCINE_LABEL';
-  String get householdOverViewZeroDoseDeliveredIconLabel =>
-      'HOUSEHOLD_OVER_VIEW_ZERO_DOSE_DELIVERED_ICON_LABEL';
 }
 
 class DeliverIntervention {
@@ -255,8 +245,6 @@ class DeliverIntervention {
   String get doseadministeredby => 'DOSE_ADMINISTERED_BY_LABEL';
   String get proceedToVASLabel => 'PROCEED_TO_VAS_LABEL';
   String get proceedToVASDescription => 'PROCEED_TO_VAS_DESCRIPTION';
-
-  String get zeroDoseCheckLabel => 'DELIVER_INTERVENTION_ZERO_DOSE_CHECK_LABEL';
 }
 
 class Checklist {
@@ -427,10 +415,6 @@ class HomeShowcase {
 
   String get summaryReportRefusalsCases {
     return 'HOME_SHOWCASE_SUMMARY_REPORT_REFUALS_CASES';
-  }
-
-  String get summaryReportZeroDoseChildren {
-    return 'HOME_SHOWCASE_SUMMARY_REPORT_ZERO_DOSE_CHILDREN';
   }
 
   String get summaryReportSPAQ1 {

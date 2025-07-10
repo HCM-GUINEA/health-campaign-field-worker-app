@@ -5,8 +5,6 @@ part 'additional_fields_type.mapper.dart';
 
 @MappableEnum(caseStyle: CaseStyle.upperCase)
 enum AdditionalFieldsType {
-  @MappableValue("zeroDoseStatus")
-  zeroDoseStatus,
   @MappableValue("hasSideEffects")
   hasSideEffects,
   @MappableValue("deliveryStrategy")

@@ -25,8 +25,6 @@ class AdditionalFieldsTypeMapper extends EnumMapper<AdditionalFieldsType> {
   @override
   AdditionalFieldsType decode(dynamic value) {
     switch (value) {
-      case "zeroDoseStatus":
-        return AdditionalFieldsType.zeroDoseStatus;
       case "hasSideEffects":
         return AdditionalFieldsType.hasSideEffects;
       case "deliveryStrategy":
@@ -77,8 +75,6 @@ class AdditionalFieldsTypeMapper extends EnumMapper<AdditionalFieldsType> {
   @override
   dynamic encode(AdditionalFieldsType self) {
     switch (self) {
-      case AdditionalFieldsType.zeroDoseStatus:
-        return "zeroDoseStatus";
       case AdditionalFieldsType.hasSideEffects:
         return "hasSideEffects";
       case AdditionalFieldsType.deliveryStrategy:

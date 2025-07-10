@@ -183,59 +183,59 @@ class CustomDeliverInterventionPageState
     // TODO: Uncomment the following lines if you want to submit the task model here only
     // Currently it's been shifted to the ZeroDose flow page
 
-    // context.read<DeliverInterventionBloc>().add(
-    //       DeliverInterventionSubmitEvent(
-    //         task: deliverState.oldTask ?? taskModel,
-    //         isEditing: (deliverState.tasks ?? []).isNotEmpty &&
-    //                 RegistrationDeliverySingleton().beneficiaryType ==
-    //                     BeneficiaryType.household
-    //             ? true
-    //             : false,
-    //         boundaryModel: RegistrationDeliverySingleton().boundary!,
-    //       ),
-    //     );
+    context.read<DeliverInterventionBloc>().add(
+          DeliverInterventionSubmitEvent(
+            task: deliverState.oldTask ?? taskModel,
+            isEditing: (deliverState.tasks ?? []).isNotEmpty &&
+                    RegistrationDeliverySingleton().beneficiaryType ==
+                        BeneficiaryType.household
+                ? true
+                : false,
+            boundaryModel: RegistrationDeliverySingleton().boundary!,
+          ),
+        );
 
-    // ProjectTypeModel? projectTypeModel =
-    //     widget.eligibilityAssessmentType == EligibilityAssessmentType.smc
-    //         ? RegistrationDeliverySingleton()
-    //             .selectedProject
-    //             ?.additionalDetails
-    //             ?.projectType
-    //         : RegistrationDeliverySingleton()
-    //             .selectedProject
-    //             ?.additionalDetails
-    //             ?.additionalProjectType;
+    ProjectTypeModel? projectTypeModel =
+        widget.eligibilityAssessmentType == EligibilityAssessmentType.smc
+            ? RegistrationDeliverySingleton()
+                .selectedProject
+                ?.additionalDetails
+                ?.projectType
+            : RegistrationDeliverySingleton()
+                .selectedProject
+                ?.additionalDetails
+                ?.additionalProjectType;
 
-    // if (deliverState.futureDeliveries != null &&
-    //     deliverState.futureDeliveries!.isNotEmpty &&
-    //     projectTypeModel?.cycles?.isNotEmpty == true) {
-    //   context.router.popUntilRouteWithName(BeneficiaryWrapperRoute.name);
-    //   context.router.push(
-    //     CustomSplashAcknowledgementRoute(
-    //         enableBackToSearch: false,
-    //         eligibilityAssessmentType: widget.eligibilityAssessmentType),
-    //   );
-    // } else {
-    //   final reloadState = context.read<HouseholdOverviewBloc>();
+    if (deliverState.futureDeliveries != null &&
+        deliverState.futureDeliveries!.isNotEmpty &&
+        projectTypeModel?.cycles?.isNotEmpty == true) {
+      context.router.popUntilRouteWithName(BeneficiaryWrapperRoute.name);
+      context.router.push(
+        CustomSplashAcknowledgementRoute(
+            enableBackToSearch: false,
+            eligibilityAssessmentType: widget.eligibilityAssessmentType),
+      );
+    } else {
+      final reloadState = context.read<HouseholdOverviewBloc>();
 
-    //   reloadState.add(
-    //     HouseholdOverviewReloadEvent(
-    //       projectId: RegistrationDeliverySingleton().projectId!,
-    //       projectBeneficiaryType:
-    //           RegistrationDeliverySingleton().beneficiaryType!,
-    //     ),
-    //   );
-    //   context.router.popAndPush(
-    //     CustomHouseholdAcknowledgementRoute(
-    //       enableViewHousehold: true,
-    //       eligibilityAssessmentType: widget.eligibilityAssessmentType,
-    //     ),
-    //   );
-    // }
-    context.router.popAndPush(CustomDeliverySummaryRoute(
-      eligibilityAssessmentType: widget.eligibilityAssessmentType,
-      task: taskModel,
-    ));
+      reloadState.add(
+        HouseholdOverviewReloadEvent(
+          projectId: RegistrationDeliverySingleton().projectId!,
+          projectBeneficiaryType:
+              RegistrationDeliverySingleton().beneficiaryType!,
+        ),
+      );
+      context.router.popAndPush(
+        CustomHouseholdAcknowledgementRoute(
+          enableViewHousehold: true,
+          eligibilityAssessmentType: widget.eligibilityAssessmentType,
+        ),
+      );
+    }
+    // context.router.popAndPush(CustomDeliverySummaryRoute(
+    //   eligibilityAssessmentType: widget.eligibilityAssessmentType,
+    //   task: taskModel,
+    // ));
   }
 
   @override

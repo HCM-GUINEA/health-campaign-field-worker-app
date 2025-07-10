@@ -34,7 +34,7 @@
         android:fullBackupContent="false"
         android:fullBackupOnly="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Lafia">
+        android:label="HMC Guinea">
         <service
             android:name=".LocationService"
             android:enabled="true"

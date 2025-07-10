@@ -12,6 +12,7 @@ import 'package:registration_delivery/blocs/household_overview/household_overvie
 import 'package:registration_delivery/blocs/side_effects/side_effects.dart';
 import 'package:registration_delivery/models/entities/side_effect.dart';
 import 'package:registration_delivery/models/entities/task.dart';
+import 'package:registration_delivery/router/registration_delivery_router.gm.dart';
 import 'package:registration_delivery/utils/extensions/extensions.dart';
 import 'package:registration_delivery/utils/utils.dart';
 import 'package:registration_delivery/widgets/component_wrapper/product_variant_bloc_wrapper.dart';
@@ -373,14 +374,9 @@ class CustomSideEffectsPageState extends LocalizedState<CustomSideEffectsPage> {
       },
     ).then(
       (value) => context.router.push(
-        ZeroDoseCheckRoute(
-            projectBeneficiaryClientReferenceId:
-                widget.tasks.last.projectBeneficiaryClientReferenceId,
-            eligibilityAssessmentType: EligibilityAssessmentType.smc,
-            isAdministration: false,
-            isChecklistAssessmentDone: false,
-            hasSideEffects: true,
-            sideEffect: sideEffect),
+        HouseholdAcknowledgementRoute(
+          enableViewHousehold: true,
+        ),
       ),
     );
   }
