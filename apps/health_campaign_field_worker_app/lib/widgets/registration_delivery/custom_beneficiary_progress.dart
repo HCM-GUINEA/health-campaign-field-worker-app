@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:digit_components/widgets/digit_card.dart';
 import 'package:digit_data_model/data/data_repository.dart';
+import 'package:digit_data_model/models/project_type/project_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:registration_delivery/data/repositories/local/task.dart';
@@ -11,6 +13,7 @@ import 'package:registration_delivery/models/entities/task.dart';
 import 'package:registration_delivery/registration_delivery.dart';
 import '../../../models/entities/assessment_checklist/status.dart'
     as status_local;
+import '../../data/local_store/secure_store/secure_store.dart';
 import '../../data/repositories/custom_task.dart';
 // import '../../progress_indicator/progress_indicator.dart';
 import '../progress_indicator/progress_indicator.dart';
@@ -23,16 +26,26 @@ class CustomBeneficiaryProgressBar extends StatefulWidget {
   final String label;
   final String prefixLabel;
 
-  const CustomBeneficiaryProgressBar({
-    Key? key,
-    required this.label,
-    required this.prefixLabel,
-  }) : super(key: key);
+  const CustomBeneficiaryProgressBar(
+      {super.key, required this.label, required this.prefixLabel});
 
   @override
   State<CustomBeneficiaryProgressBar> createState() =>
       _CustomBeneficiaryProgressBarState();
 }
+
+// FutureOr<Cycle?> _loadProject(LocalSecureStore localSecureStore) async {
+//   final getSelectedProjectType = await localSecureStore.selectedProjectType;
+//   final currentRunningCycle = getSelectedProjectType?.cycles
+//       ?.where(
+//         (e) =>
+//             (e.startDate!) < DateTime.now().millisecondsSinceEpoch &&
+//             (e.endDate!) > DateTime.now().millisecondsSinceEpoch,
+//         // Return null when no matching cycle is found
+//       )
+//       .firstOrNull;
+//   return currentRunningCycle;
+// }
 
 class _CustomBeneficiaryProgressBarState
     extends State<CustomBeneficiaryProgressBar> {
@@ -45,13 +58,22 @@ class _CustomBeneficiaryProgressBarState
 
     final projectId = RegistrationDeliverySingleton().projectId;
     final loggedInUserUuid = RegistrationDeliverySingleton().loggedInUserUuid;
+    final projectType = RegistrationDeliverySingleton().projectType;
+    // final currentCycle = _loadProject(localSecureStore);
+
+    final currentRunningCycle = projectType?.cycles
+        ?.where(
+          (e) =>
+              (e.startDate!) < DateTime.now().millisecondsSinceEpoch &&
+              (e.endDate!) > DateTime.now().millisecondsSinceEpoch,
+          // Return null when no matching cycle is found
+        )
+        .firstOrNull;
+
+    int startDate = currentRunningCycle!.startDate;
 
     final now = DateTime.now();
-    final gte = DateTime(
-      now.year,
-      now.month,
-      now.day,
-    );
+
     final lte = DateTime(
       now.year,
       now.month,
@@ -68,7 +90,7 @@ class _CustomBeneficiaryProgressBarState
         projectId: projectId,
         createdBy: loggedInUserUuid,
         plannedEndDate: lte.millisecondsSinceEpoch,
-        plannedStartDate: gte.millisecondsSinceEpoch,
+        plannedStartDate: startDate,
       ),
       listener: (taskData) async {
         if (mounted) {
@@ -91,7 +113,7 @@ class _CustomBeneficiaryProgressBarState
             // status: Status.administeredSuccess.toValue(),
             createdBy: loggedInUserUuid,
             plannedEndDate: lte.millisecondsSinceEpoch,
-            plannedStartDate: gte.millisecondsSinceEpoch,
+            plannedStartDate: startDate,
             projectId: projectId,
           );
           List<TaskModel> results =
@@ -127,7 +149,7 @@ class _CustomBeneficiaryProgressBarState
 
   @override
   Widget build(BuildContext context) {
-    const target = 210;
+    const target = 400;
 
     return DigitCard(
       child: CustomProgressIndicatorContainer(
