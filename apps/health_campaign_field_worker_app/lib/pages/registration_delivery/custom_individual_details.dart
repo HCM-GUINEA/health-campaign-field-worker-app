@@ -969,6 +969,9 @@ class CustomIndividualDetailsPageState
                             child: ReactiveWrapperField(
                               formControlName: _mobileNumberKey,
                               validationMessages: {
+                                'required': (object) => localizations.translate(
+                                    i18_local.householdDetails
+                                        .mobileNumberRequiredValidationMessage),
                                 'mobileNumber': (object) =>
                                     localizations.translate(i18_local
                                         .individualDetails
@@ -987,8 +990,13 @@ class CustomIndividualDetailsPageState
                                   i18_local.individualDetails.mobileNumberLabel,
                                 ),
                                 child: DigitTextFormInput(
+                                  // Add the country code as a non-editable prefix
+                                  prefixText: '+224 ',
+                                  prefixTextStyle: textTheme.bodyS.copyWith(
+                                    color: theme.colorTheme.text.secondary,
+                                  ),
                                   keyboardType: TextInputType.number,
-                                  maxLength: 11,
+                                  maxLength: 9,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
@@ -1188,9 +1196,11 @@ class CustomIndividualDetailsPageState
       _genderKey: FormControl<String>(value: getGenderOptions(individual)),
       _mobileNumberKey:
           FormControl<String>(value: individual?.mobileNumber, validators: [
+        //adding validation requirement for mobile
+        Validators.required,
         Validators.delegate((validator) =>
             local_utils.CustomValidator.validMobileNumber(validator)),
-        Validators.maxLength(8),
+        Validators.maxLength(9),
         Validators.delegate((validator) =>
             local_utils.CustomValidator.startsWith7or9(validator)),
         // Validators.required,
