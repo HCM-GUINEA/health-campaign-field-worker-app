@@ -341,6 +341,9 @@ class HouseholdDetails {
 
   String get previousBeneficiaryQRCode => "PREVIOUS_BENEFICIARY_QR_CODE_LABEL";
 
+  String get mobileNumberRequiredValidationMessage =>
+      'MOBILE_NUMBER_REQUIRED_VALIDATION_MESSAGE';
+
   String get yesLabelText => 'YES_LABEL_TEXT';
 
   String get noLabelText => 'NO_LABEL_TEXT';
