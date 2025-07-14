@@ -383,6 +383,7 @@ class HouseholdDetails {
   String get submitNo => 'SUBMIT_NO';
   String get householdConsentLabel => 'HOUSEHOLD_CONSENT_LABEL';
   String get cardAztTitle => 'HOUSEHOLD_CONSENT_LABELL';
+  String get previousBeneficiaryIdLabel => 'PREVIOUS_BENEFICIARY_ID_LABEL';
 }
 
 class ForgotPassword {
@@ -1461,6 +1462,8 @@ class IndividualDetails {
   String get relocatedBeneficiaryQuestion => 'RELOCATED_BENEFICIARY_QUESTION';
 
   String get monthsExceedErrorText => 'MONTHS_EXCEED_ERROR_TEXT';
+
+  String get childResidentQuestion => 'CHILD_RESIDENT_QUESTION';
 }
 
 class BeneficiaryDetails {
