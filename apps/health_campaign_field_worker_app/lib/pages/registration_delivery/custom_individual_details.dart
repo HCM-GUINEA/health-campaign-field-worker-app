@@ -1007,7 +1007,7 @@ class CustomIndividualDetailsPageState
                               ),
                             ),
                           ),
-                        if (!widget.isHeadOfHousehold && isRelocated)
+                        /*  if (!widget.isHeadOfHousehold && isRelocated)
                           DigitButton(
                             capitalizeLetters: false,
                             label: localizations.translate(i18_local
@@ -1029,7 +1029,7 @@ class CustomIndividualDetailsPageState
                                 ),
                               );
                             },
-                          ),
+                          ),*/
                         individualDetailsShowcaseData.mobile.buildWith(
                           child: Offstage(
                             offstage: !widget.isHeadOfHousehold,
@@ -1286,7 +1286,7 @@ class CustomIndividualDetailsPageState
         // Validators.required,
       ]),
       _isResidentKey: FormControl<String>(
-        validators: [Validators.required], // Make it required
+        validators: !widget.isHeadOfHousehold ? [Validators.required] : [],
       ),
       _previousBeneficiaryIdKey: FormControl<String>(
         value: individual?.additionalFields?.fields
