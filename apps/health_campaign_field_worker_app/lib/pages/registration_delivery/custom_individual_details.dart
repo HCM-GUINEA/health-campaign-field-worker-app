@@ -70,6 +70,8 @@ class CustomIndividualDetailsPageState
   static const _mobileNumberKey = 'mobileNumber';
   static const _idTypeKey = 'idType';
   static const _idNumberKey = 'idNumber';
+  static const _previousBeneficiaryIdKey = 'previousBeneficiaryId';
+  static const _isResidentKey = 'isResident';
   bool isDuplicateTag = false;
   static const maxLength = 200;
   final clickedStatus = ValueNotifier<bool>(false);
@@ -146,7 +148,6 @@ class CustomIndividualDetailsPageState
     DateTime before150Years = DateTime(now.year - 150, now.month, now.day);
     DateTime lastDate = DateTime(now.year, now.month - 3, now.day);
     DateTime firstDate = DateTime(now.year, now.month - 59, now.day);
-    yesNoValue ??= no;
 
     final textTheme = theme.digitTextTheme(context);
 
@@ -881,63 +882,129 @@ class CustomIndividualDetailsPageState
                               );
                             },
                           ),*/
+                        // This replaces the entire "if (!widget.isHeadOfHousehold)" block
+// for the radio buttons in your build method's slivers.
+
                         if (!widget.isHeadOfHousehold)
-                          Text(
-                              localizations.translate(i18_local
-                                  .individualDetails
-                                  .relocatedBeneficiaryQuestion),
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: theme.colorTheme.text.primary,
-                              )),
-                        if (!widget.isHeadOfHousehold)
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey,
+                          // [START] The new wrapper for validation
+                          ReactiveWrapperField(
+                            formControlName: _isResidentKey,
+                            builder: (field) {
+                              // We get the current theme to use for colors
+                              final theme = Theme.of(context);
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // This is your existing Text widget (the question)
+                                  Text(
+                                    localizations.translate(
+                                      i18_local.individualDetails
+                                          .childResidentQuestion,
+                                    ),
+                                    style: textTheme.bodyL,
+                                  ),
+                                  const SizedBox(height: 8),
+
+                                  // Your original Container, now with a dynamic border color
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        // Use the error color from the theme if the field has an error
+                                        color: field.errorText != null
+                                            ? theme.colorScheme.error
+                                            : theme.colorScheme.outline,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return Row(
+                                          children: [
+                                            Expanded(
+                                              child: RadioListTile<String>(
+                                                title: Text(
+                                                    localizations.translate(
+                                                  i18_local.householdDetails
+                                                      .capitalYesLabelText,
+                                                )),
+                                                value: yes,
+                                                groupValue: yesNoValue,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    yesNoValue = value!;
+                                                    // Set the value for the form control
+                                                    field.control.value = value;
+                                                  });
+                                                  // This setState is for the outer widget,
+                                                  // to show/hide the next field immediately.
+                                                  this.setState(() {});
+                                                },
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: RadioListTile<String>(
+                                                title: Text(
+                                                    localizations.translate(
+                                                  i18_local.householdDetails
+                                                      .capitalNoLabelText,
+                                                )),
+                                                value: no,
+                                                groupValue: yesNoValue,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    yesNoValue = value!;
+                                                    // Set the value for the form control
+                                                    field.control.value = value;
+                                                  });
+                                                  this.setState(() {});
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  // Conditionally display the error text below the container
+                                  if (field.errorText != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 8.0, left: 16.0),
+                                      child: Text(
+                                        field.errorText!,
+                                        style: TextStyle(
+                                            color: theme.colorScheme.error),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
+                        // [END] The new wrapper for validation
+                        if (!widget.isHeadOfHousehold && yesNoValue == no)
+                          ReactiveWrapperField(
+                            formControlName: _previousBeneficiaryIdKey,
+                            builder: (field) => LabeledField(
+                              label: localizations.translate(
+                                i18_local.householdDetails
+                                    .previousBeneficiaryIdLabel,
                               ),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: StatefulBuilder(
-                              builder: (context, setState) {
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: RadioListTile<String>(
-                                        title: Text(localizations.translate(
-                                          i18_local.householdDetails
-                                              .capitalYesLabelText,
-                                        )),
-                                        value: yes,
-                                        groupValue: yesNoValue,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            yesNoValue = value!;
-                                          });
-                                          // Force rebuild to show/hide button
-                                          this.setState(() {});
-                                        },
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: RadioListTile<String>(
-                                        title: Text(localizations.translate(
-                                          i18_local.householdDetails
-                                              .capitalNoLabelText,
-                                        )),
-                                        value: no,
-                                        groupValue: yesNoValue,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            yesNoValue = value!;
-                                          });
-                                          this.setState(() {});
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
+                              child: DigitTextFormInput(
+                                inputFormatters: [
+                                  UpperCaseTextFormatter(),
+                                ],
+                                keyboardType: TextInputType.text,
+                                initialValue: form
+                                    .control(_previousBeneficiaryIdKey)
+                                    .value,
+                                onChange: (value) {
+                                  form
+                                      .control(_previousBeneficiaryIdKey)
+                                      .value = value;
+                                },
+                                errorMessage: field.errorText,
+                              ),
                             ),
                           ),
                         if (!widget.isHeadOfHousehold && isRelocated)
@@ -1112,6 +1179,7 @@ class CustomIndividualDetailsPageState
     }
 
     String? individualName = form.control(_individualNameKey).value as String?;
+    final isResident = form.control(_isResidentKey).value as String?;
     individual = individual.copyWith(
       name: name.copyWith(
         givenName: individualName?.trim(),
@@ -1130,6 +1198,18 @@ class CustomIndividualDetailsPageState
                 identifierType: IdentifierTypes.uniqueBeneficiaryID.toValue(),
               ),
             ],
+      additionalFields: IndividualAdditionalFields(
+        version: 1,
+        fields: [
+          AdditionalField(
+            'previousBeneficiaryId',
+            form.control(_previousBeneficiaryIdKey).value ?? '',
+            // previousBeneficiaryId,
+          ),
+          // We conditionally add it to the list of fields.
+          if (isResident != null) AdditionalField('isResident', isResident),
+        ],
+      ),
       // additionalFields: IndividualAdditionalFields(version: 1, fields: [
       //   AdditionalField(form.control(_idTypeKey).value ?? '',
       //       form.control(_idNumberKey).value ?? '')
@@ -1205,6 +1285,15 @@ class CustomIndividualDetailsPageState
             local_utils.CustomValidator.startsWith7or9(validator)),
         // Validators.required,
       ]),
+      _isResidentKey: FormControl<String>(
+        validators: [Validators.required], // Make it required
+      ),
+      _previousBeneficiaryIdKey: FormControl<String>(
+        value: individual?.additionalFields?.fields
+                .firstWhereOrNull((e) => e.key == 'previousBeneficiaryId')
+                ?.value ??
+            '',
+      ),
     });
   }
 
