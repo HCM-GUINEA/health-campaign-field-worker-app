@@ -597,6 +597,104 @@ class CustomIndividualDetailsPageState
                                 ),
                               ),
                             ),
+                            // The ID Type and ID Number fields are moved here and are no longer conditional on isHeadOfHousehold
+                            ReactiveWrapperField(
+                              formControlName: _idTypeKey,
+                              builder: (field) => LabeledField(
+                                label: localizations.translate(
+                                  i18.individualDetails.idTypeLabelText,
+                                ),
+                                capitalizedFirstLetter: false,
+                                isRequired: false,
+                                child: DigitDropdown<String>(
+                                  selectedOption: form
+                                              .control(_idTypeKey)
+                                              .value !=
+                                          null
+                                      ? DropdownItem(
+                                          name: localizations.translate(
+                                              form.control(_idTypeKey).value),
+                                          code: form.control(_idTypeKey).value)
+                                      : const DropdownItem(
+                                          name: 'Default', code: 'DEFAULT'),
+                                  items: [
+                                    DropdownItem(
+                                      name: localizations.translate('Default'),
+                                      code: 'DEFAULT',
+                                    ),
+                                    DropdownItem(
+                                      name:
+                                          localizations.translate('Carte CPS'),
+                                      code: 'CARTE_CPS',
+                                    ),
+                                  ],
+                                  onSelect: (value) {
+                                    form.control(_idTypeKey).value = value.code;
+                                    setState(() {
+                                      if (value.code == 'DEFAULT') {
+                                        form.control(_idNumberKey).value =
+                                            IdGen.i.identifier.toString();
+                                      } else {
+                                        form.control(_idNumberKey).value = null;
+                                      }
+                                    });
+                                  },
+                                  emptyItemText: localizations
+                                      .translate(i18.common.noMatchFound),
+                                ),
+                              ),
+                            ),
+                            /* if (form.control(_idTypeKey).value != 'DEFAULT')
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ReactiveFormConsumer(
+                                    builder: (context, formGroup, child) {
+                                      return ReactiveWrapperField(
+                                        formControlName: _idNumberKey,
+                                        validationMessages: {
+                                          'required': (object) =>
+                                              localizations.translate(
+                                                '${i18.individualDetails.idNumberLabelText}_IS_REQUIRED',
+                                              ),
+                                        },
+                                        builder: (field) => LabeledField(
+                                          label: localizations.translate(
+                                            i18.individualDetails
+                                                .idNumberLabelText,
+                                          ),
+                                          capitalizedFirstLetter: false,
+                                          isRequired: false,
+                                          child: DigitTextFormInput(
+                                            inputFormatters: [
+                                              UpperCaseTextFormatter(),
+                                            ],
+                                            readOnly: form
+                                                    .control(_idTypeKey)
+                                                    .value ==
+                                                'DEFAULT',
+                                            initialValue: form
+                                                .control(_idNumberKey)
+                                                .value,
+                                            onChange: (value) {
+                                              form.control(_idNumberKey).value =
+                                                  value;
+                                            },
+                                            errorMessage: field.errorText,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 4),
+                                ],
+                              ),
+                            if (form.control(_idTypeKey).value == 'DEFAULT')
+                              const SizedBox(
+                                height: spacer2,
+                              ),
+
+                              */
                             if (widget.isHeadOfHousehold)
                               const SizedBox(
                                 height: spacer2,
