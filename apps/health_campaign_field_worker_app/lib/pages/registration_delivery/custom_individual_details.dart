@@ -211,6 +211,17 @@ class CustomIndividualDetailsPageState
                             final projectId =
                                 RegistrationDeliverySingleton().projectId;
                             form.markAllAsTouched();
+                            // ---- Add this debugging code ----
+                            if (!form.valid) {
+                              print("=======Form is invalid!");
+                              form.controls.forEach((name, control) {
+                                if (control.invalid) {
+                                  print(
+                                      "Invalid control: $name, Errors: ${control.errors}");
+                                }
+                              });
+                            }
+// ---- End of debugging code ----
                             if (!form.valid) return;
                             FocusManager.instance.primaryFocus?.unfocus();
 
@@ -556,6 +567,7 @@ class CustomIndividualDetailsPageState
                         ),
                         Column(
                           children: [
+                            // 1. NAME
                             individualDetailsShowcaseData.nameOfIndividual
                                 .buildWith(
                               child: ReactiveWrapperField(
@@ -597,53 +609,59 @@ class CustomIndividualDetailsPageState
                                 ),
                               ),
                             ),
-                            // The ID Type and ID Number fields are moved here and are no longer conditional on isHeadOfHousehold
-                            ReactiveWrapperField(
-                              formControlName: _idTypeKey,
-                              builder: (field) => LabeledField(
-                                label: localizations.translate(
-                                  i18.individualDetails.idTypeLabelText,
-                                ),
-                                capitalizedFirstLetter: false,
-                                isRequired: false,
-                                child: DigitDropdown<String>(
-                                  selectedOption: form
-                                              .control(_idTypeKey)
-                                              .value !=
-                                          null
-                                      ? DropdownItem(
-                                          name: localizations.translate(
-                                              form.control(_idTypeKey).value),
-                                          code: form.control(_idTypeKey).value)
-                                      : const DropdownItem(
-                                          name: 'Default', code: 'DEFAULT'),
-                                  items: [
-                                    DropdownItem(
-                                      name: localizations.translate('Default'),
-                                      code: 'DEFAULT',
-                                    ),
-                                    DropdownItem(
-                                      name:
-                                          localizations.translate('Carte CPS'),
-                                      code: 'CARTE_CPS',
-                                    ),
-                                  ],
-                                  onSelect: (value) {
-                                    form.control(_idTypeKey).value = value.code;
-                                    setState(() {
-                                      if (value.code == 'DEFAULT') {
-                                        form.control(_idNumberKey).value =
-                                            IdGen.i.identifier.toString();
-                                      } else {
-                                        form.control(_idNumberKey).value = null;
-                                      }
-                                    });
-                                  },
-                                  emptyItemText: localizations
-                                      .translate(i18.common.noMatchFound),
+                            // The ID Type and ID Number fields
+                            if (!widget.isHeadOfHousehold) ...[
+                              ReactiveWrapperField(
+                                formControlName: _idTypeKey,
+                                builder: (field) => LabeledField(
+                                  label: localizations.translate(
+                                    i18.individualDetails.idTypeLabelText,
+                                  ),
+                                  capitalizedFirstLetter: false,
+                                  isRequired: false,
+                                  child: DigitDropdown<String>(
+                                    selectedOption: form
+                                                .control(_idTypeKey)
+                                                .value !=
+                                            null
+                                        ? DropdownItem(
+                                            name: localizations.translate(
+                                                form.control(_idTypeKey).value),
+                                            code:
+                                                form.control(_idTypeKey).value)
+                                        : const DropdownItem(
+                                            name: 'Default', code: 'DEFAULT'),
+                                    items: [
+                                      DropdownItem(
+                                        name:
+                                            localizations.translate('Default'),
+                                        code: 'DEFAULT',
+                                      ),
+                                      DropdownItem(
+                                        name: localizations
+                                            .translate('Carte CPS'),
+                                        code: 'CARTE_CPS',
+                                      ),
+                                    ],
+                                    onSelect: (value) {
+                                      form.control(_idTypeKey).value =
+                                          value.code;
+                                      setState(() {
+                                        if (value.code == 'DEFAULT') {
+                                          form.control(_idNumberKey).value =
+                                              IdGen.i.identifier.toString();
+                                        } else {
+                                          form.control(_idNumberKey).value =
+                                              null;
+                                        }
+                                      });
+                                    },
+                                    emptyItemText: localizations
+                                        .translate(i18.common.noMatchFound),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                             /* if (form.control(_idTypeKey).value != 'DEFAULT')
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -722,9 +740,8 @@ class CustomIndividualDetailsPageState
                             ),
                           ],
                         ),
-                        Offstage(
-                          offstage: !widget.isHeadOfHousehold,
-                          child: ReactiveWrapperField(
+                        if (widget.isHeadOfHousehold) ...[
+                          ReactiveWrapperField(
                             formControlName: _idTypeKey,
                             validationMessages: {
                               'required': (_) => localizations.translate(
@@ -784,101 +801,63 @@ class CustomIndividualDetailsPageState
                               ),
                             ),
                           ),
-                        ),
-                        if (widget.isHeadOfHousehold &&
-                            form.control(_idTypeKey).value != 'DEFAULT')
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ReactiveFormConsumer(
-                                builder: (context, formGroup, child) {
-                                  return ReactiveWrapperField(
-                                    formControlName: _idNumberKey,
-                                    validationMessages: {
-                                      'required': (object) =>
-                                          localizations.translate(
-                                            '${i18.individualDetails.idNumberLabelText}_IS_REQUIRED',
-                                          ),
-                                    },
-                                    builder: (field) => LabeledField(
-                                      label: localizations.translate(
-                                        i18.individualDetails.idNumberLabelText,
-                                      ),
-                                      capitalizedFirstLetter: false,
-                                      isRequired: false,
-                                      child: DigitTextFormInput(
-                                        inputFormatters: [
-                                          UpperCaseTextFormatter(),
-                                        ],
-                                        readOnly:
-                                            form.control(_idTypeKey).value ==
-                                                'DEFAULT',
-                                        initialValue:
-                                            form.control(_idNumberKey).value,
-                                        onChange: (value) {
-                                          form.control(_idNumberKey).value =
-                                              value;
-                                        },
-                                        errorMessage: field.errorText,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 4),
-                            ],
-                          ),
-                        if (widget.isHeadOfHousehold &&
-                            form.control(_idTypeKey).value == 'DEFAULT')
-                          const SizedBox(
-                            height: spacer2,
-                          ),
+                          if (form.control(_idTypeKey).value != 'DEFAULT')
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              // ... your ID number text field for HoH
+                            ),
+                          if (form.control(_idTypeKey).value == 'DEFAULT')
+                            const SizedBox(
+                              height: spacer2,
+                            ),
+                        ],
+                        // 4. DATE OF BIRTH
                         individualDetailsShowcaseData.dateOfBirth.buildWith(
-                          // child: CustomDigitDobPicker(
-                          //   datePickerFormControl: _dobKey,
-                          //   datePickerLabel: localizations.translate(
-                          //     i18.individualDetails.dobLabelText,
-                          //   ),
-                          //   ageFieldLabel: localizations.translate(
-                          //     i18.individualDetails.ageLabelText,
-                          //   ),
-                          //   yearsHintLabel: localizations.translate(
-                          //     i18.individualDetails.yearsHintText,
-                          //   ),
-                          //   separatorLabel: localizations.translate(
-                          //     i18.individualDetails.separatorLabelText,
-                          //   ),
-                          //   yearsAndMonthsErrMsg: localizations.translate(
-                          //     i18_local.individualDetails
-                          //         .yearsAndMonthsErrorTextUpdate,
-                          //   ),
-                          //   isHead: widget.isHeadOfHousehold,
-                          //   requiredErrMsg: localizations.translate(
-                          //     i18.common.corecommonRequired,
-                          //   ),
-                          //   initialDate: before150Years,
-                          //   onChangeOfFormControl: (formControl) {
-                          //     // Handle changes to the control's value here
-                          //     final value = formControl.value;
+                          /* child: CustomDigitDobPicker(
+                            datePickerFormControl: _dobKey,
+                            datePickerLabel: localizations.translate(
+                              i18.individualDetails.dobLabelText,
+                            ),
+                            ageFieldLabel: localizations.translate(
+                              i18.individualDetails.ageLabelText,
+                            ),
+                            yearsHintLabel: localizations.translate(
+                              i18.individualDetails.yearsHintText,
+                            ),
+                            separatorLabel: localizations.translate(
+                              i18.individualDetails.separatorLabelText,
+                            ),
+                            yearsAndMonthsErrMsg: localizations.translate(
+                              i18_local.individualDetails
+                                  .yearsAndMonthsErrorTextUpdate,
+                            ),
+                            isHead: widget.isHeadOfHousehold,
+                            requiredErrMsg: localizations.translate(
+                              i18.common.corecommonRequired,
+                            ),
+                            initialDate: before150Years,
+                            onChangeOfFormControl: (formControl) {
+                              // Handle changes to the control's value here
+                              final value = formControl.value;
 
-                          //     digits.DigitDOBAge age =
-                          //         digits.DigitDateUtils.calculateAge(value);
-                          //     // Allow only between 0 to 59 months for cycle 1
-                          //     final ageInMonths = age.years * 12 + age.months;
-                          //     if (ageInMonths > 59) {
-                          //       widget.isHeadOfHousehold
-                          //           ? formControl.removeError('')
-                          //           : formControl.setErrors({'': true});
-                          //     } else {
-                          //       formControl.removeError('');
-                          //     }
-                          //   },
-                          //   cancelText: localizations
-                          //       .translate(i18.common.coreCommonCancel),
-                          //   confirmText: localizations
-                          //       .translate(i18.common.coreCommonOk),
-                          //   monthsHintLabel: 'Month',
-                          // ),
+                              digits.DigitDOBAge age =
+                                  digits.DigitDateUtils.calculateAge(value);
+                              // Allow only between 0 to 59 months for cycle 1
+                              final ageInMonths = age.years * 12 + age.months;
+                              if (ageInMonths > 59) {
+                                widget.isHeadOfHousehold
+                                    ? formControl.removeError('')
+                                    : formControl.setErrors({'': true});
+                              } else {
+                                formControl.removeError('');
+                              }
+                            },
+                            cancelText: localizations
+                                .translate(i18.common.coreCommonCancel),
+                            confirmText: localizations
+                                .translate(i18.common.coreCommonOk),
+                            monthsHintLabel: 'Month',
+                          ),*/
                           child: CustomDigitDobPicker(
                             datePickerFormControl: _dobKey,
                             datePickerLabel: localizations.translate(
@@ -929,6 +908,7 @@ class CustomIndividualDetailsPageState
                             monthsHintLabel: 'Month',
                           ),
                         ),
+                        // 5. GENDER
                         dropdown.DigitDropdown<String>(
                           label: localizations.translate(
                             i18.individualDetails.genderLabelText,
@@ -980,10 +960,8 @@ class CustomIndividualDetailsPageState
                               );
                             },
                           ),*/
-                        // This replaces the entire "if (!widget.isHeadOfHousehold)" block
-// for the radio buttons in your build method's slivers.
 
-                        if (!widget.isHeadOfHousehold)
+                        if (!widget.isHeadOfHousehold) ...[
                           // [START] The new wrapper for validation
                           ReactiveWrapperField(
                             formControlName: _isResidentKey,
@@ -1032,7 +1010,7 @@ class CustomIndividualDetailsPageState
                                                   setState(() {
                                                     yesNoValue = value!;
                                                     // Set the value for the form control
-                                                    field.control.value = value;
+                                                    field.didChange(value);
                                                   });
                                                   // This setState is for the outer widget,
                                                   // to show/hide the next field immediately.
@@ -1053,7 +1031,7 @@ class CustomIndividualDetailsPageState
                                                   setState(() {
                                                     yesNoValue = value!;
                                                     // Set the value for the form control
-                                                    field.control.value = value;
+                                                    field.didChange(value);
                                                   });
                                                   this.setState(() {});
                                                 },
@@ -1079,8 +1057,9 @@ class CustomIndividualDetailsPageState
                               );
                             },
                           ),
-                        // [END] The new wrapper for validation
-                        if (!widget.isHeadOfHousehold && yesNoValue == no)
+                        ],
+                        // 6. BENEFICIARY-ONLY FIELDS
+                        if (!widget.isHeadOfHousehold && yesNoValue == no) ...[
                           ReactiveWrapperField(
                             formControlName: _previousBeneficiaryIdKey,
                             builder: (field) => LabeledField(
@@ -1105,6 +1084,7 @@ class CustomIndividualDetailsPageState
                               ),
                             ),
                           ),
+                        ],
                         /*  if (!widget.isHeadOfHousehold && isRelocated)
                           DigitButton(
                             capitalizeLetters: false,
@@ -1375,7 +1355,7 @@ class CustomIndividualDetailsPageState
       _mobileNumberKey:
           FormControl<String>(value: individual?.mobileNumber, validators: [
         //adding validation requirement for mobile
-        Validators.required,
+        if (widget.isHeadOfHousehold) Validators.required,
         Validators.delegate((validator) =>
             local_utils.CustomValidator.validMobileNumber(validator)),
         Validators.maxLength(9),
