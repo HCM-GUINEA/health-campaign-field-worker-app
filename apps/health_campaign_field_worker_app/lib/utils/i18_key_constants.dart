@@ -341,6 +341,9 @@ class HouseholdDetails {
 
   String get previousBeneficiaryQRCode => "PREVIOUS_BENEFICIARY_QR_CODE_LABEL";
 
+  String get mobileNumberRequiredValidationMessage =>
+      'MOBILE_NUMBER_REQUIRED_VALIDATION_MESSAGE';
+
   String get yesLabelText => 'YES_LABEL_TEXT';
 
   String get noLabelText => 'NO_LABEL_TEXT';
@@ -380,6 +383,7 @@ class HouseholdDetails {
   String get submitNo => 'SUBMIT_NO';
   String get householdConsentLabel => 'HOUSEHOLD_CONSENT_LABEL';
   String get cardAztTitle => 'HOUSEHOLD_CONSENT_LABELL';
+  String get previousBeneficiaryIdLabel => 'PREVIOUS_BENEFICIARY_ID_LABEL';
 }
 
 class ForgotPassword {
@@ -1365,6 +1369,10 @@ class SearchBeneficiary {
   String get proximityLabel => 'PROXIMITY_LABEL';
   String get beneficiaryIdValidInfoDescription =>
       'BENEFICIARY_ID_VALID_INFO_DESCRIPTION';
+
+  String get mobileNumberValidInfoDescription =>
+      'MOBILE_NUMBER_VALID_INFO_DESCRIPTION';
+  String get mobileNumberInfoTitle => 'MOBILE_NUMBER_VALID_INFO_TITLE';
 }
 
 class IndividualDetails {
@@ -1454,6 +1462,8 @@ class IndividualDetails {
   String get relocatedBeneficiaryQuestion => 'RELOCATED_BENEFICIARY_QUESTION';
 
   String get monthsExceedErrorText => 'MONTHS_EXCEED_ERROR_TEXT';
+
+  String get childResidentQuestion => 'CHILD_RESIDENT_QUESTION';
 }
 
 class BeneficiaryDetails {
@@ -1463,6 +1473,7 @@ class BeneficiaryDetails {
       "ERROR_VALIDATION_FOR_EXCESS_STOCK_DISPATCH";
   String get searchbybeneficiaryidtextupdate =>
       'SEARCH_BY_BENEFICIARY_ID_TEXT_UPDATE';
+  String get searchByMobileNumber => 'SEARCH_BY_MOBILE_NUMBER';
   String get validationForExcessStockReturn =>
       "ERROR_VALIDATION_FOR_EXCESS_STOCK_RETURN";
   String get validationForExcessStockAcceptReturn =>
