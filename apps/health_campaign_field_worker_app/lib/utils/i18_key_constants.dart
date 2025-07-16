@@ -245,6 +245,7 @@ class DeliverIntervention {
   String get doseadministeredby => 'DOSE_ADMINISTERED_BY_LABEL';
   String get proceedToVASLabel => 'PROCEED_TO_VAS_LABEL';
   String get proceedToVASDescription => 'PROCEED_TO_VAS_DESCRIPTION';
+  String get jourDePassageLabel => 'JOUR_DE_PASSAGE_LABEL';
 }
 
 class Checklist {
