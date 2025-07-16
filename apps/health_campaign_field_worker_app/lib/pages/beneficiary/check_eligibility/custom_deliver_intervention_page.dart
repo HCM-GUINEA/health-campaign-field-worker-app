@@ -65,6 +65,8 @@ class CustomDeliverInterventionPageState
   static const _quantityDistributedKey = 'quantityDistributed';
   static const _doseAdministrationKey = 'doseAdministered';
   static const _dateOfAdministrationKey = 'dateOfAdministration';
+  // New form key for the delivery day dropdown
+  static const _deliveryDayKey = 'deliveryDay';
   final clickedStatus = ValueNotifier<bool>(false);
   bool? shouldSubmit = false;
 
@@ -251,6 +253,16 @@ class CustomDeliverInterventionPageState
         );
       });
     }
+    // List of options for the new dropdown
+
+    final deliveryDayOptions = [
+      'Jour 1',
+      'Jour 2',
+      'Jour 3',
+      'Jour 4',
+      'Jour 5',
+      'Rattrapage'
+    ];
 
     return ProductVariantBlocWrapper(
       child: BlocBuilder<HouseholdOverviewBloc, HouseholdOverviewState>(
@@ -395,6 +407,10 @@ class CustomDeliverInterventionPageState
                                                           MainAxisSize.max,
                                                       isDisabled: isClicked,
                                                       onPressed: () async {
+                                                        form.markAllAsTouched();
+
+                                                        if (!form.valid) return;
+
                                                         final deliveredProducts =
                                                             ((form.control(_resourceDeliveredKey)
                                                                         as FormArray)
@@ -584,6 +600,60 @@ class CustomDeliverInterventionPageState
                                                       ),
                                                     ),
                                                   ),
+                                                // ** START: Corrected "Jour de Passage" Field **
+                                                ReactiveWrapperField(
+                                                  formControlName:
+                                                      _deliveryDayKey,
+                                                  validationMessages: {
+                                                    'required': (_) =>
+                                                        localizations.translate(i18
+                                                            .common
+                                                            .corecommonRequired),
+                                                  },
+                                                  builder: (field) {
+                                                    // Get the current value from the form control to build the DropdownItem
+                                                    final String? currentValue =
+                                                        form
+                                                            .control(
+                                                                _deliveryDayKey)
+                                                            .value;
+
+                                                    return LabeledField(
+                                                      label:
+                                                          '${localizations.translate(i18_local.deliverIntervention.jourDePassageLabel)} *',
+                                                      child: DigitDropdown(
+                                                        // Correct parameter: 'selectedOption' which takes a DropdownItem
+                                                        selectedOption: currentValue ==
+                                                                null
+                                                            ? null
+                                                            : DropdownItem(
+                                                                name:
+                                                                    currentValue,
+                                                                code:
+                                                                    currentValue),
+
+                                                        // Correct parameter: 'onSelect' for the callback
+                                                        onSelect: (value) {
+                                                          // Use didChange to update the reactive form state
+                                                          field.didChange(
+                                                              value.code);
+                                                        },
+
+                                                        // Correct parameter: 'items' for the list of choices
+                                                        items: deliveryDayOptions
+                                                            .map((e) =>
+                                                                DropdownItem(
+                                                                    name: e,
+                                                                    code: e))
+                                                            .toList(),
+
+                                                        errorMessage:
+                                                            field.errorText,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+// ** END: Corrected "Jour de Passage" Field **
                                                 if (widget.eligibilityAssessmentType ==
                                                         EligibilityAssessmentType
                                                             .smc &&
@@ -878,6 +948,15 @@ class CustomDeliverInterventionPageState
             AdditionalFieldsType.doseIndex.toValue(),
             "0${dose ?? 1}",
           ),
+          // ** START: Save the value of the new dropdown **
+
+          AdditionalField(
+            'jourDePassage', // The key for the new field
+
+            form.control(_deliveryDayKey).value,
+          ),
+
+          // ** END: Save the value of the new dropdown **
           AdditionalField(
             AdditionalFieldsType.deliveryStrategy.toValue(),
             deliveryStrategy,
@@ -985,6 +1064,14 @@ class CustomDeliverInterventionPageState
                 .toString(),
         validators: [],
       ),
+      // ** START: Add the new dropdown to the form group **
+
+      _deliveryDayKey: FormControl<String>(
+        value: null,
+        validators: [Validators.required],
+      ),
+
+      // ** END: Add the new dropdown to the form group **
       _dateOfAdministrationKey:
           FormControl<DateTime>(value: DateTime.now(), validators: []),
       _resourceDeliveredKey: FormArray<ProductVariantModel>(
