@@ -96,6 +96,23 @@ class CustomValidator {
     return {'mobileNumber': true}; // Invalid
   }
 
+  static Map<String, dynamic>? validMobileNumberNineDigits(
+    AbstractControl<dynamic> control,
+  ) {
+    if (control.value == null || control.value.toString().isEmpty) {
+      return null;
+    }
+
+    const pattern = r'^\d{9}$'; // Exactly 9 digits
+
+    if (RegExp(pattern).hasMatch(control.value.toString())) {
+      return null; // Valid
+    }
+
+    return {'mobileNumber': true}; // Invalid
+  }
+  
+
   static Map<String, dynamic>? startsWith7or9(
       AbstractControl<dynamic> control) {
     if (control.value == null || control.value.toString().isEmpty) {
@@ -110,6 +127,22 @@ class CustomValidator {
     }
 
     return {'startsWith7or9': true}; // Invalid
+  }
+
+  static Map<String, dynamic>? startsWith6(
+      AbstractControl<dynamic> control) {
+    if (control.value == null || control.value.toString().isEmpty) {
+      return null;
+    }
+
+    final value = control.value.toString();
+    const pattern = r'^6'; // Starts with 6
+
+    if (RegExp(pattern).hasMatch(value)) {
+      return null; // Valid
+    }
+
+    return {'startsWith6': true}; // Invalid
   }
 
   static Map<String, dynamic>? onlyAlphabets(AbstractControl<dynamic> control) {

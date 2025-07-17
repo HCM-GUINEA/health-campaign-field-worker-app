@@ -587,7 +587,8 @@ class CustomIndividualDetailsPageState
                                       ),
                                 },
                                 builder: (field) => LabeledField(
-                                  label: localizations.translate(
+                                  label: 
+                                  localizations.translate(
                                     widget.isHeadOfHousehold
                                         ? i18_local.individualDetails
                                             .caregiverNameLabelText
@@ -1120,15 +1121,19 @@ class CustomIndividualDetailsPageState
                                 'mobileNumber': (object) =>
                                     localizations.translate(i18_local
                                         .individualDetails
-                                        .mobileNumberLengthValidationMessage),
+                                        .mobileNumberLengthValidationMessageUpdated),
                                 'maxLength': (object) => localizations
                                     .translate(i18_local.individualDetails
-                                        .mobileNumberLengthValidationMessage)
-                                    .replaceAll('{}', '8'),
-                                'startsWith7or9': (object) =>
+                                        .mobileNumberLengthValidationMessageUpdated)
+                                    .replaceAll('{}', '9'),
+                                // 'startsWith7or9': (object) =>
+                                //     localizations.translate(i18_local
+                                //         .individualDetails
+                                //         .mobileNumberStartWith7or9ValidationMessage),
+                                'startsWith6': (object) =>
                                     localizations.translate(i18_local
                                         .individualDetails
-                                        .mobileNumberStartWith7or9ValidationMessage),
+                                        .mobileNumberStartWith6ValidationMessageUpdated),
                               },
                               builder: (field) => LabeledField(
                                 label: localizations.translate(
@@ -1357,10 +1362,11 @@ class CustomIndividualDetailsPageState
         //adding validation requirement for mobile
         if (widget.isHeadOfHousehold) Validators.required,
         Validators.delegate((validator) =>
-            local_utils.CustomValidator.validMobileNumber(validator)),
+            local_utils.CustomValidator.validMobileNumberNineDigits(validator)),
         Validators.maxLength(9),
         Validators.delegate((validator) =>
-            local_utils.CustomValidator.startsWith7or9(validator)),
+            // local_utils.CustomValidator.startsWith7or9(validator)),
+            local_utils.CustomValidator.startsWith6(validator)),
         // Validators.required,
       ]),
       _isResidentKey: FormControl<String>(
