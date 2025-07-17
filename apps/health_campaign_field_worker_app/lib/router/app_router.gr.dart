@@ -560,6 +560,8 @@ abstract class _$AppRouter extends RootStackRouter {
         child: CustomStockDetailsPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+          passage: args.passage,
+          jour: args.jour,
         ),
       );
     },
@@ -2820,12 +2822,16 @@ class CustomStockDetailsRoute
   CustomStockDetailsRoute({
     Key? key,
     InventoryLocalization? appLocalizations,
+    String? passage,
+    String? jour,
     List<PageRouteInfo>? children,
   }) : super(
           CustomStockDetailsRoute.name,
           args: CustomStockDetailsRouteArgs(
             key: key,
             appLocalizations: appLocalizations,
+            passage: passage,
+            jour: jour,
           ),
           initialChildren: children,
         );
@@ -2840,15 +2846,21 @@ class CustomStockDetailsRouteArgs {
   const CustomStockDetailsRouteArgs({
     this.key,
     this.appLocalizations,
+    this.passage,
+    this.jour,
   });
 
   final Key? key;
 
   final InventoryLocalization? appLocalizations;
 
+  final String? passage;
+
+  final String? jour;
+
   @override
   String toString() {
-    return 'CustomStockDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations}';
+    return 'CustomStockDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations, passage: $passage, jour: $jour}';
   }
 }
 

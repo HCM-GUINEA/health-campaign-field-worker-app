@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:inventory_management/router/inventory_router.gm.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+import 'package:digit_components/widgets/atoms/digit_dropdown.dart' as dropdown;
 
 import 'package:inventory_management/utils/i18_key_constants.dart' as i18;
 import '../../utils//i18_key_constants.dart' as i18_local;
@@ -44,6 +45,9 @@ class CustomWarehouseDetailsPageState
   static const _administrativeUnitKey = 'administrativeUnit';
   static const _warehouseKey = 'warehouse';
   static const _teamCodeKey = 'teamCode';
+  static const _passageKey = 'passage';
+  static const _jourKey = 'jour';
+  
   bool deliveryTeamSelected = false;
   String? selectedFacilityId;
   TextEditingController controller1 = TextEditingController();
@@ -79,6 +83,8 @@ class CustomWarehouseDetailsPageState
                 ]
               : [],
         ),
+        _passageKey: FormControl<String>(),
+        _jourKey: FormControl<String>(),
       });
 
   @override
@@ -422,6 +428,10 @@ class CustomWarehouseDetailsPageState
                                                       ),
                                                     );
                                                   } else {
+                                                    // Get passage and jour values from form to pass to the next page
+                                                    final passageValue = form.control(_passageKey).value as String?;
+                                                    final jourValue = form.control(_jourKey).value as String?;
+                                                    
                                                     recordStockBloc.add(
                                                       RecordStockSaveTransactionDetailsEvent(
                                                         dateOfRecord:
@@ -453,8 +463,13 @@ class CustomWarehouseDetailsPageState
                                                             : "WAREHOUSE",
                                                       ),
                                                     );
+                                                    // Store values in temporary storage for access in the next page                                 
                                                     context.router.push(
-                                                      CustomStockDetailsRoute(),
+                                                      CustomStockDetailsRoute(
+                                                        passage: passageValue,
+                                                        jour: jourValue,
+                                                      
+                                                      ),
                                                     );
                                                   }
                                                 },
@@ -614,8 +629,60 @@ class CustomWarehouseDetailsPageState
                                               suffixIcon: Icons.qr_code_2,
                                               onSuffixTap: null,
                                             );
-                                          })
-                                  ]),
+                                          }),
+                                    if (deliveryTeamSelected)
+                                      dropdown.DigitDropdown<String>(
+                                        label: localizations.translate(
+                                          i18_local.stockDetails.passageValueLabel,
+                                        ),
+                                        valueMapper: (value) => value,
+                                        initialValue: form.control(_passageKey).value,
+                                        menuItems: [
+                                          localizations.translate(
+                                            i18_local.stockDetails.passageValueOne,
+                                          ),
+                                          localizations.translate(
+                                            i18_local.stockDetails.passageValueTwo,
+                                          ),
+                                          localizations.translate(
+                                            i18_local.stockDetails.passageValueThree,
+                                          ),
+                                          localizations.translate(
+                                            i18_local.stockDetails.passageValueFour,
+                                          ),
+                                          localizations.translate(
+                                            i18_local.stockDetails.passageValueFive,
+                                          ),
+                                          
+                                        ],
+                                        formControlName: _passageKey,
+                                        onChanged: (value) {
+                                          form.control(_passageKey).value = value;
+                                        },
+                                      ),
+
+                                      if (deliveryTeamSelected)
+                                      dropdown.DigitDropdown<String>(
+                                        label: localizations.translate(
+                                          i18_local.stockDetails.jourValueLabel,
+                                        ),
+                                        valueMapper: (value) => value,
+                                        initialValue: form.control(_jourKey).value,
+                                        menuItems:  [
+                                         localizations.translate(i18_local.stockDetails.jourValueOne),
+                                          localizations.translate(i18_local.stockDetails.jourValueTwo),
+                                          localizations.translate(i18_local.stockDetails.jourValueThree),
+                                          localizations.translate(i18_local.stockDetails.jourValueFour),
+                                          localizations.translate(i18_local.stockDetails.jourValueFive),
+                                        ],
+                                        formControlName: _jourKey,
+                                        onChanged: (value) {
+                                          form.control(_jourKey).value = value;
+                                        },
+                                      ),  
+                                  ]
+                                  
+                                  ),
                             ],
                           );
                         },
