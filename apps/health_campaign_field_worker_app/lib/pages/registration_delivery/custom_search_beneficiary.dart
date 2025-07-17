@@ -142,7 +142,7 @@ class _CustomSearchBeneficiaryPageState
                             child: Align(
                               alignment: Alignment.topLeft,
                               child: Text(
-                                localizations.translate(
+                                  localizations.translate(
                                   RegistrationDeliverySingleton()
                                                   .householdType !=
                                               null &&
@@ -156,7 +156,7 @@ class _CustomSearchBeneficiaryPageState
                                           ? i18.searchBeneficiary
                                               .statisticsLabelText
                                           : i18.searchBeneficiary
-                                              .searchIndividualLabelText,
+                                              .searchIndividualLabelText,           
                                 ),
                                 style: textTheme.headingXl.copyWith(
                                   color: theme.colorTheme.text.primary,
@@ -321,16 +321,7 @@ class _CustomSearchBeneficiaryPageState
                                       ],
                                       controller: searchController,
                                       icon: const SizedBox.shrink(),
-                                      hintText: (RegistrationDeliverySingleton()
-                                                  .householdType ==
-                                              HouseholdType.community)
-                                          ? localizations.translate(i18
-                                              .searchBeneficiary
-                                              .clfSearchHintText)
-                                          : localizations.translate(
-                                              i18.searchBeneficiary
-                                                  .beneficiarySearchHintText,
-                                            ),
+                                      hintText: _getHintText(),
                                       textCapitalization:
                                           TextCapitalization.words,
                                       onChanged: (value) {
@@ -1219,6 +1210,23 @@ class _CustomSearchBeneficiaryPageState
           );
         }
       }
+    }
+  }
+
+  String _getHintText() {
+    if (isSearchByBeneficaryIdEnabled) {
+      return localizations.translate(
+        i18_local.searchBeneficiary.beneficiaryIdSearchHintText,
+      );
+    } else if (isSearchByMobileNumberEnabled) {
+      return localizations.translate(
+        i18_local.searchBeneficiary.beneficiaryMobileSearchHintText,
+      );
+    } else {
+      // Use existing translation logic for default name search
+      return (RegistrationDeliverySingleton().householdType == HouseholdType.community)
+          ? localizations.translate(i18.searchBeneficiary.clfSearchHintText)
+          : localizations.translate(i18.searchBeneficiary.beneficiarySearchHintText);
     }
   }
 }

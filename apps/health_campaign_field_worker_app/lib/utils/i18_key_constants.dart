@@ -1367,6 +1367,9 @@ class SearchBeneficiary {
 
   String get beneficiarySearchHintText => 'BENEFICIARY_SEARCH_HINT_TEXT';
 
+  String get beneficiaryIdSearchHintText => "BENEFICIARY_ID_SEARCH_HINT_TEXT";
+  String get beneficiaryMobileSearchHintText => "BENEFICIARY_MOBILE_SEARCH_HINT_TEXT";
+
   String get beneficiaryIndividualSearchHintText =>
       'BENEFICIARY_INDIVIDUAL_SEARCH_HINT_TEXT';
 
@@ -1396,6 +1399,10 @@ class IndividualDetails {
 
   String get individualDetailsLabelTextUpdate =>
       'INDIVIDUAL_DETAILS_LABEL_TEXT_UPDATE';
+
+  String get mobileNumberStartWith6ValidationMessageUpdated => 
+      'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_6_UPDATED';
+
   String get individualDetailsNameLabelTextUpdate =>
       'INDIVIDUAL_DETAILS_NAME_LABEL_TEXT_UPDATE';
   String get individualsDetailsLabelTextNewUpdate =>
@@ -1456,6 +1463,9 @@ class IndividualDetails {
   String get mobileNumberLengthValidationMessage =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_LENGTH';
 
+  String get mobileNumberLengthValidationMessageUpdated => 
+      'INDIVIDUAL_DETAILS_MOBILE_NUMBER_LENGTH_UPDATED';
+      
   String get mobileNumberStartWith7or9ValidationMessage =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_7_OR_9';
 
