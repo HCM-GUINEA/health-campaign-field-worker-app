@@ -32,11 +32,17 @@ import '../../utils/constants.dart';
 import '../../utils/extensions/extensions.dart';
 import '../../utils/i18_key_constants.dart' as i18_local;
 
+
 @RoutePage()
 class CustomStockDetailsPage extends LocalizedStatefulWidget {
+  final String? passage;
+  final String? jour;
+  
   const CustomStockDetailsPage({
     super.key,
     super.appLocalizations,
+    this.passage,
+    this.jour,
   });
 
   @override
@@ -673,6 +679,24 @@ class CustomStockDetailsPageState
                                                       lng,
                                                     ),
                                                   ],
+                                                  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                  if (widget.passage != null &&
+                                                      widget.passage!
+                                                          .trim()
+                                                          .isNotEmpty)
+                                                    AdditionalField(
+                                                      'passage',
+                                                      widget.passage!,
+                                                    ),
+                                                  if (widget.jour != null &&
+                                                      widget.jour!
+                                                          .trim()
+                                                          .isNotEmpty)
+                                                    AdditionalField(
+                                                      'jour_de_passage',
+                                                      widget.jour!,
+                                                    ),
+                                                   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                                                   if (scannerState
                                                       .barCodes.isNotEmpty)
                                                     addBarCodesToFields(

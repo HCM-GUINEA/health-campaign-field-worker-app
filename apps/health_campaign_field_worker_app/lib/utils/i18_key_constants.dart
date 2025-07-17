@@ -506,6 +506,21 @@ class HomeShowcase {
 class StockDetails {
   const StockDetails();
 
+  String get passageValueLabel => 'STOCK_DETAILS_PASSAGE_VALUE_LABEL';
+  String get passageValueOne => 'STOCK_DETAILS_PASSAGE_VALUE_ONE';
+  String get passageValueTwo => 'STOCK_DETAILS_PASSAGE_VALUE_TWO';
+  String get passageValueThree => 'STOCK_DETAILS_PASSAGE_VALUE_THREE';
+  String get passageValueFour => 'STOCK_DETAILS_PASSAGE_VALUE_FOUR';
+  String get passageValueFive => 'STOCK_DETAILS_PASSAGE_VALUE_FIVE';
+
+
+  String get jourValueLabel => 'STOCK_DETAILS_JOUR_VALUE_LABEL';
+  String get jourValueOne => 'STOCK_DETAILS_JOUR_VALUE_ONE';
+  String get jourValueTwo => 'STOCK_DETAILS_JOUR_VALUE_TWO';
+  String get jourValueThree => 'STOCK_DETAILS_JOUR_VALUE_THREE';
+  String get jourValueFour => 'STOCK_DETAILS_JOUR_VALUE_FOUR';
+  String get jourValueFive => 'STOCK_DETAILS_JOUR_VALUE_FIVE';
+
   String get selectTransactingPartyReturnedFrom =>
       'STOCK_DETAILS_RETURNED_FROM';
 
