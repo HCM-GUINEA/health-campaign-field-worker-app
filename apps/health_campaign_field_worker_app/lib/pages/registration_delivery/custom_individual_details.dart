@@ -587,8 +587,7 @@ class CustomIndividualDetailsPageState
                                       ),
                                 },
                                 builder: (field) => LabeledField(
-                                  label: 
-                                  localizations.translate(
+                                  label: localizations.translate(
                                     widget.isHeadOfHousehold
                                         ? i18_local.individualDetails
                                             .caregiverNameLabelText
@@ -662,36 +661,25 @@ class CustomIndividualDetailsPageState
                                   ),
                                 ),
                               ),
-                            ],
-                            /* if (form.control(_idTypeKey).value != 'DEFAULT')
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ReactiveFormConsumer(
-                                    builder: (context, formGroup, child) {
-                                      return ReactiveWrapperField(
+                              ReactiveFormConsumer(
+                                builder: (context, formGroup, child) {
+                                  if (formGroup.control(_idTypeKey).value !=
+                                      'DEFAULT') {
+                                    // If not default, show the field
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 16.0),
+                                      child: ReactiveWrapperField(
                                         formControlName: _idNumberKey,
-                                        validationMessages: {
-                                          'required': (object) =>
-                                              localizations.translate(
-                                                '${i18.individualDetails.idNumberLabelText}_IS_REQUIRED',
-                                              ),
-                                        },
                                         builder: (field) => LabeledField(
                                           label: localizations.translate(
                                             i18.individualDetails
                                                 .idNumberLabelText,
                                           ),
-                                          capitalizedFirstLetter: false,
-                                          isRequired: false,
+                                          isRequired: true,
                                           child: DigitTextFormInput(
                                             inputFormatters: [
                                               UpperCaseTextFormatter(),
                                             ],
-                                            readOnly: form
-                                                    .control(_idTypeKey)
-                                                    .value ==
-                                                'DEFAULT',
                                             initialValue: form
                                                 .control(_idNumberKey)
                                                 .value,
@@ -702,18 +690,15 @@ class CustomIndividualDetailsPageState
                                             errorMessage: field.errorText,
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(height: 4),
-                                ],
+                                      ),
+                                    );
+                                  } else {
+                                    // If it is default, show nothing
+                                    return const SizedBox.shrink();
+                                  }
+                                },
                               ),
-                            if (form.control(_idTypeKey).value == 'DEFAULT')
-                              const SizedBox(
-                                height: spacer2,
-                              ),
-
-                              */
+                            ],
                             if (widget.isHeadOfHousehold)
                               const SizedBox(
                                 height: spacer2,
