@@ -1419,6 +1419,9 @@ class IndividualDetails {
 
   String get headAgeValidError => "HEAD_AGE_VALID_ERROR";
 
+  String get caregiverDetailsLabelTextUpdate => 
+      'CAREGIVER_DETAILS_LABEL_TEXT_UPDATE';
+
   String get individualsDetailsLabelText => 'INDIVIDUAL_LABEL_TEXT';
 
   String get caregiverDetailsLabelText => 'CAREGIVER_LABEL_TEXT';
