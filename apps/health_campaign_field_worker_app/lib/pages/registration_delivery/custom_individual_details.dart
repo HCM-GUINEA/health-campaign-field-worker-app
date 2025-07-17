@@ -557,9 +557,9 @@ class CustomIndividualDetailsPageState
                           localizations.translate(
                             widget.isHeadOfHousehold
                                 ? i18_local
-                                    .individualDetails.caregiverDetailsLabelText
+                                    .individualDetails.caregiverDetailsLabelTextUpdate                         
                                 : i18_local.individualDetails
-                                    .individualsDetailsLabelTextNewUpdate,
+                                    .individualsDetailsLabelTextNewUpdate,                           
                           ),
                           style: textTheme.headingXl.copyWith(
                             color: theme.colorTheme.text.primary,
