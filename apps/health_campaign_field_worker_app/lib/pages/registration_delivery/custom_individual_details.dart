@@ -803,15 +803,57 @@ class CustomIndividualDetailsPageState
                             ),
                           ),
                           if (form.control(_idTypeKey).value != 'DEFAULT')
-                            const Column(
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              // ... your ID number text field for HoH
+                              children: [
+                                ReactiveFormConsumer(
+                                  builder: (context, formGroup, child) {
+                                    // This checks the value of the ID Type dropdown
+                                    if (formGroup.control(_idTypeKey).value !=
+                                        'DEFAULT') {
+                                      // If it's NOT 'DEFAULT', we show the ID Number field
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 5.0),
+                                        child: ReactiveWrapperField(
+                                          formControlName: _idNumberKey,
+                                          builder: (field) => LabeledField(
+                                            label: localizations.translate(
+                                              i18.individualDetails
+                                                  .idNumberLabelText,
+                                            ),
+                                            isRequired: true,
+                                            child: DigitTextFormInput(
+                                              inputFormatters: [
+                                                UpperCaseTextFormatter(),
+                                              ],
+                                              initialValue: form
+                                                  .control(_idNumberKey)
+                                                  .value,
+                                              onChange: (value) {
+                                                form
+                                                    .control(_idNumberKey)
+                                                    .value = value;
+                                              },
+                                              errorMessage: field.errorText,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      // If it IS 'DEFAULT', we show nothing
+                                      return const SizedBox.shrink();
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           if (form.control(_idTypeKey).value == 'DEFAULT')
                             const SizedBox(
                               height: spacer2,
                             ),
                         ],
+
                         // 4. DATE OF BIRTH
                         individualDetailsShowcaseData.dateOfBirth.buildWith(
                           /* child: CustomDigitDobPicker(
