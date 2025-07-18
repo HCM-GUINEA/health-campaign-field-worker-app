@@ -159,13 +159,61 @@ class _EligibilityChecklistViewPage
                               kPadding, 0, kPadding, 0),
                           child: DigitElevatedButton(
                             onPressed: () async {
-                              submitTriggered = true;
+                              // Set submitTriggered to true to show inline validation messages
+                              setState(() {
+                                submitTriggered = true;
+                              });
+
+                              // 1. Validate the TextFields using the Form key
+                              final isTextFormValid =
+                                  checklistFormKey.currentState?.validate() ??
+                                      false;
+
+                              // 2. Manually validate the required, top-level radio button questions
+                              bool allRequiredRadioAnswered = true;
+                              final itemsAttributes = initialAttributes;
+                              if (itemsAttributes != null) {
+                                for (int i = 0;
+                                    i < itemsAttributes.length;
+                                    i++) {
+                                  final item = itemsAttributes[i];
+                                  // A top-level question's code does NOT contain a '.'
+                                  final isTopLevelQuestion =
+                                      !(item.code ?? '').contains('.');
+
+                                  if (isTopLevelQuestion &&
+                                      item.required == true &&
+                                      item.dataType == 'SingleValueList' &&
+                                      controller[i].text.isEmpty) {
+                                    allRequiredRadioAnswered = false;
+                                    break; // Found an unanswered required question, no need to check further
+                                  }
+                                }
+                              }
+
+                              // 3. If either validation fails, stop the submission
+                              if (!isTextFormValid ||
+                                  !allRequiredRadioAnswered) {
+                                // Optionally, you can show a snackbar to inform the user
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      localizations.translate(
+                                          i18_local.common.corecommonRequired),
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.error,
+                                  ),
+                                );
+                                return; // Stop execution
+                              }
+
+                              // --- If all validations pass, proceed with the existing submission logic ---
                               final isValid =
                                   checklistFormKey.currentState?.validate();
                               if (!isValid!) {
                                 return;
                               }
-                              final itemsAttributes = initialAttributes;
                               if (itemsAttributes != null) {
                                 for (int i = 0;
                                     i < itemsAttributes.length;
