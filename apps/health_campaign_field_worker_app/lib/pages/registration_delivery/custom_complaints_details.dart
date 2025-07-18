@@ -428,16 +428,21 @@ class CustomComplaintsDetailsPageState
                             validationMessages: {
                               'mobileNumber': (object) =>
                                   localizations.translate(i18.individualDetails
-                                      .mobileNumberInvalidFormatValidationMessage),
+                                      .mobileNumberLengthValidationMessageUpdated),
                               'required': (object) => localizations.translate(
                                   i18.complaints.validationRequiredError),
                               'maxLength': (object) => localizations.translate(i18
                                   .individualDetails
-                                  .mobileNumberInvalidFormatValidationMessage),
-                              'startsWith7or9': (object) =>
-                                  localizations.translate(i18_local
-                                      .individualDetails
-                                      .mobileNumberStartWith7or9ValidationMessage),
+                                  .mobileNumberLengthValidationMessageUpdated),
+                              // 'startsWith7or9': (object) =>
+                              //     localizations.translate(i18_local
+                              //         .individualDetails
+                              //         .mobileNumberStartWith7or9ValidationMessage),
+
+                              'startsWith6': (object) =>
+                                    localizations.translate(i18_local
+                                        .individualDetails
+                                        .mobileNumberStartWith6ValidationMessageUpdated),
                               // 'minLength': (object) => localizations.translate(
                               //     i18.complaints.validationMinLengthError),
                               // 'maxLength': (object) => localizations
@@ -451,6 +456,11 @@ class CustomComplaintsDetailsPageState
                                 ),
                                 isRequired: true,
                                 child: DigitTextFormInput(
+                                   prefixText: '+224 ',
+                                  prefixTextStyle: textTheme.bodyS.copyWith(
+                                    color: theme.colorTheme.text.secondary,
+                                  ),
+                                  maxLength: 9,
                                   readOnly: (isRaisedForSelf)
                                       ? (field.value == null ||
                                               field.value.isEmpty)
@@ -506,7 +516,7 @@ class CustomComplaintsDetailsPageState
                               'mobileNumber': (object) =>
                                   localizations.translate(
                                     i18.individualDetails
-                                        .mobileNumberInvalidFormatValidationMessage,
+                                        .mobileNumberLengthValidationMessageUpdated,
                                   ),
                               // 'minLength': (object) => localizations.translate(
                               //     i18.complaints.validationMinLengthError),
@@ -515,11 +525,15 @@ class CustomComplaintsDetailsPageState
                               //     .replaceAll('{}', '8'),
                               'maxLength': (object) => localizations.translate(i18
                                   .individualDetails
-                                  .mobileNumberInvalidFormatValidationMessage),
-                              'startsWith7or9': (object) =>
-                                  localizations.translate(i18_local
-                                      .individualDetails
-                                      .mobileNumberStartWith7or9ValidationMessage),
+                                  .mobileNumberLengthValidationMessageUpdated),
+                              // 'startsWith7or9': (object) =>
+                              //     localizations.translate(i18_local
+                              //         .individualDetails
+                              //         .mobileNumberStartWith7or9ValidationMessage),
+                               'startsWith6': (object) =>
+                                    localizations.translate(i18_local
+                                        .individualDetails
+                                        .mobileNumberStartWith6ValidationMessageUpdated),
                             },
                             builder: (field) {
                               return LabeledField(
@@ -527,6 +541,11 @@ class CustomComplaintsDetailsPageState
                                   i18.complaints.supervisorContactNumber,
                                 ),
                                 child: DigitTextFormInput(
+                                   prefixText: '+224 ',
+                                  prefixTextStyle: textTheme.bodyS.copyWith(
+                                    color: theme.colorTheme.text.secondary,
+                                  ),
+                                  maxLength:9,
                                   keyboardType: TextInputType.number,
                                   initialValue: field.value,
                                   inputFormatters: [
@@ -628,11 +647,11 @@ class CustomComplaintsDetailsPageState
         validators: [
           Validators.required,
           Validators.delegate(
-              (validator) => CustomValidator.validMobileNumber(validator)),
+              (validator) => local_utils.CustomValidator.validMobileNumberNineDigits(validator)),
           // Validators.minLength(8),
-          Validators.maxLength(8),
+          Validators.maxLength(9),
           Validators.delegate((validator) =>
-              local_utils.CustomValidator.startsWith7or9(validator)),
+              local_utils.CustomValidator.startsWith6(validator)),
         ],
       ),
       _supervisorName: FormControl<String>(
@@ -655,10 +674,10 @@ class CustomComplaintsDetailsPageState
         disabled: shouldDisableForm,
         validators: [
           Validators.delegate(
-              (validator) => CustomValidator.validMobileNumber(validator)),
-          Validators.maxLength(8),
+              (validator) => local_utils.CustomValidator.validMobileNumberNineDigits(validator)),
+          Validators.maxLength(9),
           Validators.delegate((validator) =>
-              local_utils.CustomValidator.startsWith7or9(validator)),
+              local_utils.CustomValidator.startsWith6(validator)),
         ],
       ),
       _complaintDescription: FormControl<String>(
