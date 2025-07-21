@@ -385,6 +385,14 @@ class HouseholdDetails {
   String get householdConsentLabel => 'HOUSEHOLD_CONSENT_LABEL';
   String get cardAztTitle => 'HOUSEHOLD_CONSENT_LABELL';
   String get previousBeneficiaryIdLabel => 'PREVIOUS_BENEFICIARY_ID_LABEL';
+  String get numberOfChildren0To59MonthsLabel =>
+      'NUMBER_OF_CHILDREN_0_TO_59_MONTHS_LABEL';
+  String get numberOfChildren0To11MonthsLabel =>
+      'NUMBER_OF_CHILDREN_0_TO_11_MONTHS_LABEL';
+  String get numberOfChildren12To59MonthsLabel =>
+      'NUMBER_OF_CHILDREN_12_TO_59_MONTHS_LABEL';
+  String get totalChildrenCountMismatchError =>
+      'TOTAL_CHILDREN_COUNT_MISMATCH_ERROR';
 }
 
 class ForgotPassword {
@@ -512,7 +520,6 @@ class StockDetails {
   String get passageValueThree => 'STOCK_DETAILS_PASSAGE_VALUE_THREE';
   String get passageValueFour => 'STOCK_DETAILS_PASSAGE_VALUE_FOUR';
   String get passageValueFive => 'STOCK_DETAILS_PASSAGE_VALUE_FIVE';
-
 
   String get jourValueLabel => 'STOCK_DETAILS_JOUR_VALUE_LABEL';
   String get jourValueOne => 'STOCK_DETAILS_JOUR_VALUE_ONE';
@@ -1368,7 +1375,8 @@ class SearchBeneficiary {
   String get beneficiarySearchHintText => 'BENEFICIARY_SEARCH_HINT_TEXT';
 
   String get beneficiaryIdSearchHintText => "BENEFICIARY_ID_SEARCH_HINT_TEXT";
-  String get beneficiaryMobileSearchHintText => "BENEFICIARY_MOBILE_SEARCH_HINT_TEXT";
+  String get beneficiaryMobileSearchHintText =>
+      "BENEFICIARY_MOBILE_SEARCH_HINT_TEXT";
 
   String get beneficiaryIndividualSearchHintText =>
       'BENEFICIARY_INDIVIDUAL_SEARCH_HINT_TEXT';
@@ -1400,7 +1408,7 @@ class IndividualDetails {
   String get individualDetailsLabelTextUpdate =>
       'INDIVIDUAL_DETAILS_LABEL_TEXT_UPDATE';
 
-  String get mobileNumberStartWith6ValidationMessageUpdated => 
+  String get mobileNumberStartWith6ValidationMessageUpdated =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_6_UPDATED';
 
   String get individualDetailsNameLabelTextUpdate =>
@@ -1419,7 +1427,7 @@ class IndividualDetails {
 
   String get headAgeValidError => "HEAD_AGE_VALID_ERROR";
 
-  String get caregiverDetailsLabelTextUpdate => 
+  String get caregiverDetailsLabelTextUpdate =>
       'CAREGIVER_DETAILS_LABEL_TEXT_UPDATE';
 
   String get individualsDetailsLabelText => 'INDIVIDUAL_LABEL_TEXT';
@@ -1466,9 +1474,9 @@ class IndividualDetails {
   String get mobileNumberLengthValidationMessage =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_LENGTH';
 
-  String get mobileNumberLengthValidationMessageUpdated => 
+  String get mobileNumberLengthValidationMessageUpdated =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_LENGTH_UPDATED';
-      
+
   String get mobileNumberStartWith7or9ValidationMessage =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_7_OR_9';
 
