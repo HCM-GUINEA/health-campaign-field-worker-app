@@ -48,10 +48,13 @@ class _CustomSummaryReportState
 
   static const _dateKey = 'dateKey';
   static const _registeredChildrenKey = 'registeredChildren';
+  static const _registeredHHKey = 'registeredHH';
   static const _administeredChildrenKey = 'administeredChildren';
   static const _refusalsCasesKey = 'refusalsCases';
   static const _usedTablet_3_11monthKey = 'usedTablet3_11month';
   static const _usedTablet_12_59monthKey = 'usedTablet12s_59month';
+  static const _remainingTablet_3_11monthKey = 'remainingTablet3_11month';
+  static const _remainingTablet_12_59monthKey = 'remainingTablet12_59month';
 
   FormGroup _form() {
     return fb.group({});
@@ -111,11 +114,17 @@ class _CustomSummaryReportState
                               width: 120,
                             ),
                             DigitGridColumn(
+                              label: "Registered HH",
+                              key: _registeredHHKey,
+                              width: 180,
+                            ),
+                            DigitGridColumn(
                               label: localizations.translate(i18Local
                                   .homeShowcase.summaryReportRegistredChildren),
                               key: _registeredChildrenKey,
                               width: 180,
                             ),
+                            
                             DigitGridColumn(
                               label: localizations.translate(i18Local
                                   .homeShowcase
@@ -141,6 +150,16 @@ class _CustomSummaryReportState
                               key: _usedTablet_12_59monthKey,
                               width: 180,
                             ),
+                            DigitGridColumn(
+                              label: "Tablet 3-11 months remaining",
+                              key: _remainingTablet_3_11monthKey,
+                              width: 200,
+                            ),
+                            DigitGridColumn(
+                              label: "Tablet 12-59 months remaining",
+                              key: _remainingTablet_12_59monthKey,
+                              width: 200,
+                            ),
                           ],
                           rows: [
                             for (final entry
@@ -152,11 +171,18 @@ class _CustomSummaryReportState
                                     value: entry.key,
                                   ),
                                   DigitGridCell(
+                                    key: _registeredHHKey,
+                                    value:
+                                        (entry.value[Constants.registeredHH] ?? 0)
+                                            .toString(),
+                                  ),
+                                  DigitGridCell(
                                     key: _registeredChildrenKey,
                                     value:
                                         (entry.value[Constants.registered] ?? 0)
                                             .toString(),
                                   ),
+                                  
                                   DigitGridCell(
                                     key: _administeredChildrenKey,
                                     value:
@@ -182,6 +208,18 @@ class _CustomSummaryReportState
                                     value:
                                         (entry.value[Constants.tablet_12_59] ??
                                                 0)
+                                            .toString(),
+                                  ),
+                                  DigitGridCell(
+                                    key: _remainingTablet_3_11monthKey,
+                                    value:
+                                        (entry.value[Constants.remaining_tablet_3_11] ?? 0)
+                                            .toString(),
+                                  ),
+                                  DigitGridCell(
+                                    key: _remainingTablet_12_59monthKey,
+                                    value:
+                                        (entry.value[Constants.remaining_tablet_12_59] ?? 0)
                                             .toString(),
                                   ),
                                 ],
