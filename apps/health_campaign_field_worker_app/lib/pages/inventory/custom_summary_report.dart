@@ -114,7 +114,8 @@ class _CustomSummaryReportState
                               width: 120,
                             ),
                             DigitGridColumn(
-                              label: "Registered HH",
+                              label: localizations.translate(
+                                  i18Local.homeShowcase.registeredHouseholds),
                               key: _registeredHHKey,
                               width: 180,
                             ),
@@ -151,12 +152,14 @@ class _CustomSummaryReportState
                               width: 180,
                             ),
                             DigitGridColumn(
-                              label: "Tablet 3-11 months remaining",
+                              label: localizations.translate(
+                                  i18Local.homeShowcase.tablets_3_11MonthsRemaining),
                               key: _remainingTablet_3_11monthKey,
                               width: 200,
                             ),
                             DigitGridColumn(
-                              label: "Tablet 12-59 months remaining",
+                              label: localizations.translate(
+                                  i18Local.homeShowcase.tablets_12_59MonthsRemaining),
                               key: _remainingTablet_12_59monthKey,
                               width: 200,
                             ),

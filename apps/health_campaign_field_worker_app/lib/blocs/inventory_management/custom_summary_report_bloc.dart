@@ -64,12 +64,16 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
     taskList = await (taskDataRepository).search(TaskSearchModel());
     productVariantList = await (productVariantDataRepository)
         .search(ProductVariantSearchModel());
-    stockReceivedList = await (stockDataRepository).search(StockSearchModel(
-        transactionType: [TransactionType.received.toValue()]));
     
-    // Get all dispatched stock to filter by reason later
+    // Filter received stock by current user only
+    stockReceivedList = await (stockDataRepository).search(StockSearchModel(
+        transactionType: [TransactionType.received.toValue()],
+        receiverId: [event.userId]));
+    
+    // Get all dispatched stock to filter by reason later, filter by current user only
     List<StockModel> allDispatchedStock = await (stockDataRepository).search(StockSearchModel(
-        transactionType: [TransactionType.dispatched.toValue()]));
+        transactionType: [TransactionType.dispatched.toValue()],
+        senderId: event.userId));
     for (var element in taskList) {
       final status = StatusMapper.fromValue(element.status);
 

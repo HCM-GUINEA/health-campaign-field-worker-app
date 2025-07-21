@@ -402,8 +402,19 @@ class ForgotPassword {
 class HomeShowcase {
   const HomeShowcase();
 
+  String get registeredHouseholds {
+    return 'HOME_SHOWCASE_REGISTERED_HOUSEHOLDS';
+  }
   String get summaryReport {
     return 'HOME_SHOWCASE_SUMMARY_REPORT_LABLE';
+  }
+
+  String get tablets_3_11MonthsRemaining {
+    return 'HOME_SHOWCASE_TABLET_3_11_MONTHS_REMAINING';
+  }
+  
+  String get tablets_12_59MonthsRemaining{
+    return 'HOME_SHOWCASE_TABLET_12_59_MONTHS_REMAINING';
   }
 
   String get summaryReportDate {
