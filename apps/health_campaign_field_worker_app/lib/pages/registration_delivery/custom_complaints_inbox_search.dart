@@ -154,6 +154,10 @@ class CustomComplaintsInboxSearchPageState
                                           localizations.translate(i18_local
                                               .individualDetails
                                               .mobileNumberLengthValidationMessageUpdated),
+                                      'startsWith6': (object) =>
+                                    localizations.translate(i18_local
+                                        .individualDetails
+                                        .mobileNumberStartWith6ValidationMessageUpdated),
                                     },
                                     builder: (field) {
                                       return LabeledField(
@@ -197,9 +201,15 @@ class CustomComplaintsInboxSearchPageState
         value: state.searchKeys?.complaintNumber,
       ),
       _mobileNumber: FormControl<String>(
-        validators: [Validators.delegate(
-                (validator) => local_utils.CustomValidator.validMobileNumberNineDigits(validator))],
+        validators: [
+          Validators.delegate(
+                (validator) => local_utils.CustomValidator.validMobileNumberNineDigits(validator)),
+                
+          Validators.delegate((validator) =>
+              local_utils.CustomValidator.startsWith6(validator)),
+                ],
         value: state.searchKeys?.complainantMobileNumber,
+        
       ),
     });
   }
