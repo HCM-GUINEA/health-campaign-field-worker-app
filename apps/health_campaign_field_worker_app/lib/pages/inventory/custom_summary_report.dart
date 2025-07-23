@@ -171,7 +171,7 @@ class _CustomSummaryReportState
                                 [
                                   DigitGridCell(
                                     key: _dateKey,
-                                    value: entry.key,
+                                    value: _formatDateForDisplay(entry.key),
                                   ),
                                   DigitGridCell(
                                     key: _registeredHHKey,
@@ -239,6 +239,20 @@ class _CustomSummaryReportState
         },
       ),
     );
+  }
+
+
+  String _formatDateForDisplay(String dateKey) {
+    // Check if this is Day 6 (should have "Rattrapage" prefix)
+    if (dateKey.endsWith('Day6')) {
+      // Extract the date part (everything before " Day6")
+      final datePartEnd = dateKey.indexOf(' Day6');
+      if (datePartEnd != -1) {
+        final datePart = dateKey.substring(0, datePartEnd);
+        return '${localizations.translate(i18Local.homeShowcase.daySixPrefix)}\n$datePart Day6';
+      }
+    }
+    return dateKey;
   }
 }
 
