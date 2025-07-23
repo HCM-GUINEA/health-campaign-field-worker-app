@@ -413,6 +413,10 @@ class HomeShowcase {
   String get registeredHouseholds {
     return 'HOME_SHOWCASE_REGISTERED_HOUSEHOLDS';
   }
+
+  String get daySixPrefix{
+    return 'HOME_SHOWCASE_DAY_6_PREFIX';
+  }
   String get summaryReport {
     return 'HOME_SHOWCASE_SUMMARY_REPORT_LABLE';
   }
