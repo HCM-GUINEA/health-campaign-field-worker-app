@@ -639,7 +639,9 @@ class CustomHouseHoldDetailsPageState
                             formControlName: _currentCycleKey,
                             builder: (field) {
                               return LabeledField(
-                                label: "current Cycle",
+                                label: localizations.translate(
+                                  i18.beneficiaryDetails.currentCycleLabel,
+                                ),
                                 // label: "Number of children 12 to 59 months (C)",
                                 
                                 child:  DigitTextFormInput(

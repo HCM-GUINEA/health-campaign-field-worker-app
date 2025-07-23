@@ -45,7 +45,8 @@ class CustomBeneficiaryAcknowledgementPageState
 
   Map<String, String>? subtitleMap(
       registration_delivery.HouseholdMemberWrapper? householdMember,
-      HouseholdModel? household) {
+      HouseholdModel? household,
+      BeneficiaryRegistrationState? registrationState) {
     if (widget.acknowledgementType == AcknowledgementType.addHousehold) {
       final householdId = household?.additionalFields?.fields
           .where((field) =>
@@ -60,16 +61,40 @@ class CustomBeneficiaryAcknowledgementPageState
               'value': householdId,
             };
     } else {
-      String? beneficiaryId = householdMember?.members?.lastOrNull?.identifiers
+      String? beneficiaryId;
+      
+      // If we have an editIndividual or persisted state, use the edited individual's ID
+      if (registrationState != null) {
+        registrationState.mapOrNull(
+          editIndividual: (editState) {
+            beneficiaryId = editState.individualModel.identifiers
+                ?.lastWhereOrNull((e) =>
+                    e.identifierType == IdentifierTypes.uniqueBeneficiaryID.toValue())
+                ?.identifierId;
+          },
+          persisted: (persistedState) {
+            if (persistedState.individualModel != null) {
+              beneficiaryId = persistedState.individualModel!.identifiers
+                  ?.lastWhereOrNull((e) =>
+                      e.identifierType == IdentifierTypes.uniqueBeneficiaryID.toValue())
+                  ?.identifierId;
+            }
+          },
+        );
+      }
+      
+      // Fall back to the last member if no edit state or no ID found
+      beneficiaryId ??= householdMember?.members?.lastOrNull?.identifiers
           ?.lastWhereOrNull((e) =>
               e.identifierType == IdentifierTypes.uniqueBeneficiaryID.toValue())
           ?.identifierId;
+          
       return beneficiaryId == null
           ? null
           : {
               'id': localizations
                   .translate(i18_local.beneficiaryDetails.beneficiaryId),
-              'value': beneficiaryId,
+              'value': beneficiaryId!,
             };
     }
   }
@@ -112,7 +137,7 @@ class CustomBeneficiaryAcknowledgementPageState
                       .acknowledgementSuccess
                       .acknowledgementSuccessUpdateLabelText),
                   subTitle:
-                      subtitleMap(householdMemberWrapper, state.householdModel),
+                      subtitleMap(householdMemberWrapper, state.householdModel, state),
                   actions: [
                     if (householdMemberWrapper != null)
                       DigitButton(

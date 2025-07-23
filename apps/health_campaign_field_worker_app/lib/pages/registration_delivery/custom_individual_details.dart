@@ -395,11 +395,19 @@ class CustomIndividualDetailsPageState
                                   scannerBloc.add(
                                     const DigitScannerEvent.handleScanner(),
                                   );
+                                  
+                                  // Extract existing beneficiary ID from the individual being edited
+                                  final existingBeneficiaryId = individualModel.identifiers
+                                      ?.firstWhereOrNull((identifier) => 
+                                          identifier.identifierType == 
+                                          IdentifierTypes.uniqueBeneficiaryID.toValue())
+                                      ?.identifierId;
+                                  
                                   final individual = _getIndividualModel(
                                     context,
                                     form: form,
                                     oldIndividual: individualModel,
-                                    beneficiaryId: beneficiaryId?.first,
+                                    beneficiaryId: existingBeneficiaryId,
                                   );
                                   final tag =
                                       scannerBloc.state.qrCodes.isNotEmpty
