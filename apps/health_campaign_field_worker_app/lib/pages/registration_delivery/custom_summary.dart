@@ -20,6 +20,7 @@ import 'package:registration_delivery/blocs/search_households/search_households.
 import 'package:registration_delivery/utils/constants.dart';
 import 'package:registration_delivery/utils/utils.dart';
 
+import '../../utils/i18_key_constants.dart' as i18_local;
 import '../../blocs/registration_delivery/custom_beneficairy_registration.dart';
 import '../../blocs/registration_delivery/custom_search_household.dart';
 import '../../router/app_router.dart';
@@ -88,6 +89,17 @@ class CustomSummaryPageState extends LocalizedState<CustomSummaryPage> {
           );
         },
         builder: (context, householdState) {
+          // ++ ADD THIS HELPER FUNCTION ++
+          // Helper function to safely extract values from additionalFields
+          String getAdditionalFieldValue(String key) {
+            final value = householdState
+                .householdModel?.additionalFields?.fields
+                .where((h) => h.key == key)
+                .firstOrNull
+                ?.value;
+            return value?.toString() ?? '0';
+          }
+
           return ScrollableContent(
               enableFixedDigitButton: true,
               header: Column(children: [
@@ -302,42 +314,78 @@ class CustomSummaryPageState extends LocalizedState<CustomSummaryPage> {
                                       labelFlex: 5,
                                       padding: const EdgeInsets.only(
                                           bottom: spacer2)),
-                                  // LabelValueItem(
-                                  //   label: localizations.translate(i18
-                                  //       .householdDetails
-                                  //       .noOfPregnantWomenCountLabel),
-                                  //   value: householdState.householdModel
-                                  //           ?.additionalFields?.fields
-                                  //           .where((h) =>
-                                  //               h.key ==
-                                  //               AdditionalFieldsType
-                                  //                   .pregnantWomen
-                                  //                   .toValue())
-                                  //           .firstOrNull
-                                  //           ?.value
-                                  //           .toString() ??
-                                  //       '0',
-                                  //   isInline: true,
-                                  //   labelFlex: 5,
-                                  // ),
-                                  // LabelValueItem(
-                                  //     label: localizations.translate(i18
-                                  //         .householdDetails
-                                  //         .noOfChildrenBelow5YearsLabel),
-                                  //     value: householdState.householdModel
-                                  //             ?.additionalFields?.fields
-                                  //             .where((h) =>
-                                  //                 h.key ==
-                                  //                 AdditionalFieldsType.children
-                                  //                     .toValue())
-                                  //             .firstOrNull
-                                  //             ?.value
-                                  //             .toString() ??
-                                  //         '0',
-                                  //     isInline: true,
-                                  //     labelFlex: 5,
-                                  //     padding:
-                                  //         const EdgeInsets.only(top: spacer2)),
+                                  // ++ ADD THESE THREE LabelValueItem WIDGETS ++
+                                  LabelValueItem(
+                                    label: localizations.translate(
+                                      i18_local.householdDetails
+                                          .numberOfChildren0To59MonthsLabel,
+                                    ),
+                                    value: getAdditionalFieldValue(
+                                        'children0to59'),
+                                    isInline: true,
+                                    labelFlex: 5,
+                                    padding:
+                                        const EdgeInsets.only(bottom: spacer2),
+                                  ),
+                                  LabelValueItem(
+                                    label: localizations.translate(
+                                      i18_local.householdDetails
+                                          .numberOfChildren0To11MonthsLabel,
+                                    ),
+                                    value: getAdditionalFieldValue(
+                                        'children0to11'),
+                                    isInline: true,
+                                    labelFlex: 5,
+                                    padding:
+                                        const EdgeInsets.only(bottom: spacer2),
+                                  ),
+                                  LabelValueItem(
+                                    label: localizations.translate(
+                                      i18_local.householdDetails
+                                          .numberOfChildren12To59MonthsLabel,
+                                    ),
+                                    value: getAdditionalFieldValue(
+                                        'children12to59'),
+                                    isInline: true,
+                                    labelFlex: 5,
+                                  ),
+
+                                  /* LabelValueItem(
+                                    label: localizations.translate(i18
+                                        .householdDetails
+                                        .noOfPregnantWomenCountLabel),
+                                    value: householdState.householdModel
+                                            ?.additionalFields?.fields
+                                            .where((h) =>
+                                                h.key ==
+                                                AdditionalFieldsType
+                                                    .pregnantWomen
+                                                    .toValue())
+                                            .firstOrNull
+                                            ?.value
+                                            .toString() ??
+                                        '0',
+                                    isInline: true,
+                                    labelFlex: 5,
+                                  ),
+                                  LabelValueItem(
+                                      label: localizations.translate(i18
+                                          .householdDetails
+                                          .noOfChildrenBelow5YearsLabel),
+                                      value: householdState.householdModel
+                                              ?.additionalFields?.fields
+                                              .where((h) =>
+                                                  h.key ==
+                                                  AdditionalFieldsType.children
+                                                      .toValue())
+                                              .firstOrNull
+                                              ?.value
+                                              .toString() ??
+                                          '0',
+                                      isInline: true,
+                                      labelFlex: 5,
+                                      padding:
+                                           const EdgeInsets.only(top: spacer2)),*/
                                 ]),
                           ]),
                       // DigitCard(
