@@ -82,7 +82,7 @@ class CustomIndividualDetailsPageState
   bool isBeneficaryRegistration = false;
   final String yes = "yes";
   final String no = "no";
-  String? yesNoValue;
+  String? yesNoValue = "no";
   bool get isRelocated => yesNoValue == yes;
   final RegExp uuidRegex = RegExp(
       r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
@@ -556,10 +556,10 @@ class CustomIndividualDetailsPageState
                         Text(
                           localizations.translate(
                             widget.isHeadOfHousehold
-                                ? i18_local
-                                    .individualDetails.caregiverDetailsLabelTextUpdate                         
+                                ? i18_local.individualDetails
+                                    .caregiverDetailsLabelTextUpdate
                                 : i18_local.individualDetails
-                                    .individualsDetailsLabelTextNewUpdate,                           
+                                    .individualsDetailsLabelTextNewUpdate,
                           ),
                           style: textTheme.headingXl.copyWith(
                             color: theme.colorTheme.text.primary,
@@ -1397,6 +1397,7 @@ class CustomIndividualDetailsPageState
         // Validators.required,
       ]),
       _isResidentKey: FormControl<String>(
+        value: !widget.isHeadOfHousehold ? no : null, // Set default value here
         validators: !widget.isHeadOfHousehold ? [Validators.required] : [],
       ),
       _previousBeneficiaryIdKey: FormControl<String>(

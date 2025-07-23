@@ -129,6 +129,12 @@ class _EligibilityChecklistViewPage
                               ))
                           .toList()
                           .firstOrNull;
+                      // ---> ADD THIS CHECK <---
+                      if (selectedServiceDefinition == null) {
+                        // Or a user-friendly error message
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
                       initialAttributes = selectedServiceDefinition?.attributes;
                       if (!isControllersInitialized) {
                         initialAttributes?.forEach((e) {
@@ -209,10 +215,9 @@ class _EligibilityChecklistViewPage
                               }
 
                               // --- If all validations pass, proceed with the existing submission logic ---
-                              final isValid =
-                                  checklistFormKey.currentState?.validate();
-                              if (!isValid!) {
-                                return;
+                              if (checklistFormKey.currentState?.validate() !=
+                                  true) {
+                                return; // Stop if the form is not valid
                               }
                               if (itemsAttributes != null) {
                                 for (int i = 0;
