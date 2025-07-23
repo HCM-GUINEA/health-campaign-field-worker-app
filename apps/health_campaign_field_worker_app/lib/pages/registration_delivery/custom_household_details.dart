@@ -51,6 +51,15 @@ class CustomHouseHoldDetailsPageState
   static const _children0To59Key = 'children0to59';
   static const _children0To11Key = 'children0to11';
   static const _children12To59Key = 'children12to59';
+  static const _currentCycleKey = 'currentCycle';
+   final currentCycle =
+    RegistrationDeliverySingleton().projectType?.cycles?.firstWhere(
+      (e) =>
+        (e.startDate) < DateTime.now().millisecondsSinceEpoch &&
+        (e.endDate) > DateTime.now().millisecondsSinceEpoch,
+      );
+      
+  
 
   // Define controllers
   final TextEditingController _pregnantWomenController =
@@ -626,6 +635,25 @@ class CustomHouseHoldDetailsPageState
                               );
                             },
                           ),
+                          ReactiveWrapperField(
+                            formControlName: _currentCycleKey,
+                            builder: (field) {
+                              return LabeledField(
+                                label: "current Cycle",
+                                // label: "Number of children 12 to 59 months (C)",
+                                
+                                child:  DigitTextFormInput(
+                                  errorMessage: field.errorText,
+                                  readOnly: true,
+                                  initialValue: form
+                                      .control(_currentCycleKey)
+                                      .value,
+                                ),
+                              );
+                            },
+                          ),
+
+                          
                         ]),
                   ),
                 ],
@@ -689,6 +717,9 @@ class CustomHouseHoldDetailsPageState
     final initialChildren0to11 = getFieldValue(_children0To11Key);
     final initialChildren12to59 = getFieldValue(_children12To59Key);
 
+    // Get current cycle name
+    final currentCycleName = currentCycle?.id.toString() ?? 'No active cycle';
+
     return fb.group(<String, Object>{
       _dateOfRegistrationKey:
           FormControl<DateTime>(value: registrationDate, validators: []),
@@ -702,6 +733,8 @@ class CustomHouseHoldDetailsPageState
           value: initialChildren0to11, validators: [Validators.required]),
       _children12To59Key: FormControl<int>(
           value: initialChildren12to59, validators: [Validators.required]),
+      _currentCycleKey: FormControl<String>(
+          value: currentCycleName),
     }, [
       //  Apply the custom validator to the whole form group
       Validators.delegate((control) => _validateChildCounts(control)),

@@ -188,7 +188,7 @@ class CustomIndividualDetailsPageState
                                     .translate(i18.common.coreCommonSave),
                               ) ??
                               localizations
-                                  .translate(i18.common.coreCommonSubmit),
+                                  .translate(i18.common.coreCommonSubmit),     
                           type: DigitButtonType.primary,
                           size: DigitButtonSize.large,
                           mainAxisSize: MainAxisSize.max,
@@ -204,6 +204,15 @@ class CustomIndividualDetailsPageState
                             if (form.control(_genderKey).value == null) {
                               setState(() {
                                 form.control(_genderKey).setErrors({'': true});
+                              });
+                            }
+                            if(!widget.isHeadOfHousehold && form.control(_idTypeKey).value == 'CARTE_CPS' &&
+                                form.control(_idNumberKey).value == null) {
+                              setState(() {
+                                form
+                                    .control(_idNumberKey)
+                                    .setErrors({'required': true});
+                                form.control(_idNumberKey).markAsTouched();
                               });
                             }
                             final userId = RegistrationDeliverySingleton()
@@ -260,6 +269,7 @@ class CustomIndividualDetailsPageState
                                       label: localizations.translate(
                                         i18.common.coreCommonSubmit,
                                       ),
+                                      
                                       onPressed: () {
                                         clickedStatus.value = true;
                                         Navigator.of(
@@ -674,7 +684,7 @@ class CustomIndividualDetailsPageState
                                           label: localizations.translate(
                                             i18.individualDetails
                                                 .idNumberLabelText,
-                                          ),
+                                          ),                                          
                                           isRequired: true,
                                           child: DigitTextFormInput(
                                             inputFormatters: [
