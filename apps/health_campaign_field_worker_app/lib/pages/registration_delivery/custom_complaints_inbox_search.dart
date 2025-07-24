@@ -157,7 +157,7 @@ class CustomComplaintsInboxSearchPageState
                                       'startsWith6': (object) =>
                                     localizations.translate(i18_local
                                         .individualDetails
-                                        .mobileNumberStartWith6ValidationMessageUpdated),
+                                        .mobileNumberStartWith6ValidationMessageNewUpdated),
                                     },
                                     builder: (field) {
                                       return LabeledField(
