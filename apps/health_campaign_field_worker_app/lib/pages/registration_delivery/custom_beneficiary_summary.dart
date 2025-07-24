@@ -26,6 +26,7 @@ import '../../blocs/registration_delivery/custom_beneficairy_registration.dart';
 import '../../blocs/registration_delivery/custom_search_household.dart';
 import '../../router/app_router.dart';
 import 'custom_beneficiary_acknowledgement.dart';
+import '../../utils/i18_key_constants.dart' as i18_local;
 
 @RoutePage()
 class CustomBeneficiarySummaryPage extends LocalizedStatefulWidget {
@@ -106,6 +107,14 @@ class CustomSummaryBeneficiaryPageState
           );
         },
         builder: (context, householdState) {
+           String getAdditionalFieldValue(String key) {
+            final value = householdState
+                .householdModel?.additionalFields?.fields
+                .where((h) => h.key == key)
+                .firstOrNull
+                ?.value;
+            return value?.toString() ?? '0';
+          }
           return ScrollableContent(
               enableFixedDigitButton: true,
               header: Column(children: [
@@ -269,6 +278,7 @@ class CustomSummaryBeneficiaryPageState
                           margin: const EdgeInsets.all(spacer2),
                           children: [
                             LabelValueSummary(
+                                withDivider: true,
                                 padding: EdgeInsets.zero,
                                 heading: localizations.translate(
                                     i18.householdDetails.householdDetailsLabel),
@@ -277,17 +287,39 @@ class CustomSummaryBeneficiaryPageState
                                 ),
                                 items: [
                                   LabelValueItem(
-                                      label: localizations.translate(i18
-                                          .householdDetails
-                                          .noOfMembersCountLabel),
-                                      value: householdState
-                                              .householdModel?.memberCount
-                                              .toString() ??
-                                          '0',
-                                      isInline: true,
-                                      labelFlex: 5,
-                                      padding: const EdgeInsets.only(
-                                          bottom: spacer2)),
+                                    label: localizations.translate(
+                                      i18_local.householdDetails
+                                          .numberOfChildren0To59MonthsLabel,
+                                    ),
+                                    value: getAdditionalFieldValue(
+                                        'children0to59'),
+                                    isInline: true,
+                                    labelFlex: 5,
+                                    padding:
+                                        const EdgeInsets.only(bottom: spacer2),
+                                  ),
+                                  LabelValueItem(
+                                    label: localizations.translate(
+                                      i18_local.householdDetails
+                                          .numberOfChildren0To11MonthsLabel,
+                                    ),
+                                    value: getAdditionalFieldValue(
+                                        'children0to11'),
+                                    isInline: true,
+                                    labelFlex: 5,
+                                    padding:
+                                        const EdgeInsets.only(bottom: spacer2),
+                                  ),
+                                  LabelValueItem(
+                                    label: localizations.translate(
+                                      i18_local.householdDetails
+                                          .numberOfChildren12To59MonthsLabel,
+                                    ),
+                                    value: getAdditionalFieldValue(
+                                        'children12to59'),
+                                    isInline: true,
+                                    labelFlex: 5,
+                                  ),
                                 ]),
                           ]),
                       DigitCard(

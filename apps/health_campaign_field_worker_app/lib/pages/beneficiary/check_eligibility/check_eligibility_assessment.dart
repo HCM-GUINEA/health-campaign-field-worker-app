@@ -129,12 +129,6 @@ class _EligibilityChecklistViewPage
                               ))
                           .toList()
                           .firstOrNull;
-                      // ---> ADD THIS CHECK <---
-                      if (selectedServiceDefinition == null) {
-                        // Or a user-friendly error message
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
                       initialAttributes = selectedServiceDefinition?.attributes;
                       if (!isControllersInitialized) {
                         initialAttributes?.forEach((e) {
@@ -165,60 +159,13 @@ class _EligibilityChecklistViewPage
                               kPadding, 0, kPadding, 0),
                           child: DigitElevatedButton(
                             onPressed: () async {
-                              // Set submitTriggered to true to show inline validation messages
-                              setState(() {
-                                submitTriggered = true;
-                              });
-
-                              // 1. Validate the TextFields using the Form key
-                              final isTextFormValid =
-                                  checklistFormKey.currentState?.validate() ??
-                                      false;
-
-                              // 2. Manually validate the required, top-level radio button questions
-                              bool allRequiredRadioAnswered = true;
+                              submitTriggered = true;
+                              final isValid =
+                                  checklistFormKey.currentState?.validate();
+                              if (!isValid!) {
+                                return;
+                              }
                               final itemsAttributes = initialAttributes;
-                              if (itemsAttributes != null) {
-                                for (int i = 0;
-                                    i < itemsAttributes.length;
-                                    i++) {
-                                  final item = itemsAttributes[i];
-                                  // A top-level question's code does NOT contain a '.'
-                                  final isTopLevelQuestion =
-                                      !(item.code ?? '').contains('.');
-
-                                  if (isTopLevelQuestion &&
-                                      item.required == true &&
-                                      item.dataType == 'SingleValueList' &&
-                                      controller[i].text.isEmpty) {
-                                    allRequiredRadioAnswered = false;
-                                    break; // Found an unanswered required question, no need to check further
-                                  }
-                                }
-                              }
-
-                              // 3. If either validation fails, stop the submission
-                              if (!isTextFormValid ||
-                                  !allRequiredRadioAnswered) {
-                                // Optionally, you can show a snackbar to inform the user
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      localizations.translate(
-                                          i18_local.common.corecommonRequired),
-                                    ),
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.error,
-                                  ),
-                                );
-                                return; // Stop execution
-                              }
-
-                              // --- If all validations pass, proceed with the existing submission logic ---
-                              if (checklistFormKey.currentState?.validate() !=
-                                  true) {
-                                return; // Stop if the form is not valid
-                              }
                               if (itemsAttributes != null) {
                                 for (int i = 0;
                                     i < itemsAttributes.length;
@@ -461,9 +408,12 @@ class _EligibilityChecklistViewPage
                                                     version: 1,
                                                     fields: [
                                                       AdditionalField(
+                                                          'lng', longitude),
+                                                      AdditionalField(
+                                                          'lat', latitude),
+                                                      AdditionalField(
                                                           'boundaryCode',
-                                                          context
-                                                              .boundary.code),
+                                                          context.boundary.code)
                                                     ],
                                                   )),
                                             ),
@@ -500,7 +450,6 @@ class _EligibilityChecklistViewPage
                                         ifReferral)) {
                                   final router = context.router;
                                   if (ifIneligible) {
-                                    // added the deliversubmitevent here
                                     final clientReferenceId =
                                         IdGen.i.identifier;
                                     final task = TaskModel(
@@ -558,6 +507,9 @@ class _EligibilityChecklistViewPage
                                                 : EligibilityAssessmentStatus
                                                     .vasDone.name,
                                           ),
+                                          ...getIndividualAdditionalFields(
+                                            widget.individual,
+                                          ),
                                         ],
                                       ),
                                       address: widget.individual!.address?.first
@@ -568,7 +520,6 @@ class _EligibilityChecklistViewPage
                                       ),
                                     );
 
-                                    // TODO: Currently, it's been shifted to the zero dose flow
                                     context.read<DeliverInterventionBloc>().add(
                                           DeliverInterventionSubmitEvent(
                                               task: task,
@@ -590,6 +541,9 @@ class _EligibilityChecklistViewPage
                                     //       widget.eligibilityAssessmentType,
                                     //   isAdministration: false,
                                     //   task: task,
+                                    //   projectBeneficiaryClientReferenceId: task
+                                    //           .projectBeneficiaryClientReferenceId ??
+                                    //       projectBeneficiaryClientReferenceId,
                                     // ));
                                     router.push(
                                       CustomHouseholdAcknowledgementRoute(
@@ -656,19 +610,158 @@ class _EligibilityChecklistViewPage
                                     ) {
                                       int index =
                                           (initialAttributes ?? []).indexOf(e);
-                                      // We only build the first level questions here.
-                                      // Nested questions are built recursively inside _buildChecklist
-                                      if ((e.code ?? '').contains('.')) {
-                                        return const SizedBox.shrink();
-                                      }
-                                      return DigitCard(
-                                        child: _buildChecklist(
-                                          e,
-                                          index,
-                                          selectedServiceDefinition,
-                                          context,
-                                        ),
-                                      );
+
+                                      return Column(children: [
+                                        if (e.dataType == 'String' &&
+                                            !(e.code ?? '').contains('.')) ...[
+                                          DigitTextField(
+                                            autoValidation: AutovalidateMode
+                                                .onUserInteraction,
+                                            isRequired: true,
+                                            controller: controller[index],
+                                            // inputFormatter: [
+                                            //   FilteringTextInputFormatter.allow(RegExp(
+                                            //     "[a-zA-Z0-9]",
+                                            //   )),
+                                            // ],
+                                            validator: (value) {
+                                              if (((value == null ||
+                                                      value == '') &&
+                                                  e.required == true)) {
+                                                return localizations.translate(
+                                                  i18_local.common
+                                                      .corecommonRequired,
+                                                );
+                                              }
+                                              if (e.regex != null) {
+                                                return (RegExp(e.regex!)
+                                                        .hasMatch(value!))
+                                                    ? null
+                                                    : localizations.translate(
+                                                        "${e.code}_REGEX");
+                                              }
+
+                                              return null;
+                                            },
+                                            label: localizations.translate(
+                                              '${selectedServiceDefinition?.code}.${e.code}',
+                                            ),
+                                          ),
+                                        ] else if (e.dataType == 'Number' &&
+                                            !(e.code ?? '').contains('.')) ...[
+                                          DigitTextField(
+                                            autoValidation: AutovalidateMode
+                                                .onUserInteraction,
+                                            textStyle:
+                                                theme.textTheme.headlineMedium,
+                                            textInputType: TextInputType.number,
+                                            inputFormatter: [
+                                              FilteringTextInputFormatter.allow(
+                                                RegExp(
+                                                  "[0-9]",
+                                                ),
+                                              ),
+                                            ],
+                                            validator: (value) {
+                                              if (((value == null ||
+                                                      value == '') &&
+                                                  e.required == true)) {
+                                                return localizations.translate(
+                                                  i18_local.common
+                                                      .corecommonRequired,
+                                                );
+                                              }
+                                              if (e.regex != null) {
+                                                return (RegExp(e.regex!)
+                                                        .hasMatch(value!))
+                                                    ? null
+                                                    : localizations.translate(
+                                                        "${e.code}_REGEX");
+                                              }
+
+                                              return null;
+                                            },
+                                            controller: controller[index],
+                                            label: '${localizations.translate(
+                                                  '${selectedServiceDefinition?.code}.${e.code}',
+                                                ).trim()} ${e.required == true ? '*' : ''}',
+                                          ),
+                                        ] else if (e.dataType ==
+                                                'MultiValueList' &&
+                                            !(e.code ?? '').contains('.')) ...[
+                                          Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8),
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    '${localizations.translate(
+                                                      '${selectedServiceDefinition?.code}.${e.code}',
+                                                    )} ${e.required == true ? '*' : ''}',
+                                                    style: theme.textTheme
+                                                        .headlineSmall,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          BlocBuilder<ServiceBloc,
+                                              ServiceState>(
+                                            builder: (context, state) {
+                                              return Column(
+                                                children: e.values!
+                                                    .map((e) =>
+                                                        DigitCheckboxTile(
+                                                          label: e,
+                                                          value:
+                                                              controller[index]
+                                                                  .text
+                                                                  .split('.')
+                                                                  .contains(e),
+                                                          onChanged: (value) {
+                                                            final String ele;
+                                                            var val =
+                                                                controller[
+                                                                        index]
+                                                                    .text
+                                                                    .split('.');
+                                                            if (val
+                                                                .contains(e)) {
+                                                              val.remove(e);
+                                                              ele =
+                                                                  val.join(".");
+                                                            } else {
+                                                              ele =
+                                                                  "${controller[index].text}.$e";
+                                                            }
+                                                            controller[index]
+                                                                    .value =
+                                                                TextEditingController
+                                                                    .fromValue(
+                                                              TextEditingValue(
+                                                                text: ele,
+                                                              ),
+                                                            ).value;
+                                                          },
+                                                        ))
+                                                    .toList(),
+                                              );
+                                            },
+                                          ),
+                                        ] else if (e.dataType ==
+                                            'SingleValueList') ...[
+                                          if (!(e.code ?? '').contains('.'))
+                                            DigitCard(
+                                              child: _buildChecklist(
+                                                e,
+                                                index,
+                                                selectedServiceDefinition,
+                                                context,
+                                              ),
+                                            ),
+                                        ],
+                                      ]);
                                     }).toList(),
                                     const SizedBox(
                                       height: 15,
@@ -687,9 +780,6 @@ class _EligibilityChecklistViewPage
         })));
   }
 
-  /// This is the main widget builder for a single survey question.
-  /// It handles rendering the correct input type and, for SingleValueList,
-  /// triggers the rendering of its nested child questions.
   Widget _buildChecklist(
     AttributesModel item,
     int index,
@@ -697,23 +787,33 @@ class _EligibilityChecklistViewPage
     BuildContext context,
   ) {
     final theme = Theme.of(context);
-
-    // For SingleValueList, we render radio buttons and then check if we need to
-    // render a nested question based on the answer.
+    /* Check the data type of the attribute*/
     if (item.dataType == 'SingleValueList') {
-      // Find all potential child questions for the current item.
       final childItems = getNextQuestions(
         item.code.toString(),
         initialAttributes ?? [],
       );
+      List<int> excludedIndexes = [];
+
+      // Ensure the current index is added to visible indexes and not excluded
+      if (!visibleChecklistIndexes.contains(index) &&
+          !excludedIndexes.contains(index)) {
+        visibleChecklistIndexes.add(index);
+      }
+
+      // Determine excluded indexes
+      for (int i = 0; i < (initialAttributes ?? []).length; i++) {
+        if (!visibleChecklistIndexes.contains(i)) {
+          excludedIndexes.add(i);
+        }
+      }
 
       return Column(
         children: [
-          // Part 1: Render the current question (e.g., Q2 "Child has a fever?")
           Align(
             alignment: Alignment.topLeft,
             child: Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(4.0), // Add padding here
               child: Text(
                 '${localizations.translate(
                   '${selectedServiceDefinition?.code}.${item.code}',
@@ -722,126 +822,190 @@ class _EligibilityChecklistViewPage
               ),
             ),
           ),
-          RadioGroup<String>.builder(
-            groupValue: controller[index].text.trim(),
-            onChanged: (value) {
-              setState(() {
-                // IMPORTANT: Before changing the value, clear the state of all
-                // descendant questions to prevent submitting old answers.
-                _recursivelyClearState(item.code.toString());
-                controller[index].text = value ?? '';
-              });
-            },
-            items: item.values
-                    ?.where((e) => e != i18_local.checklist.notSelectedKey)
-                    .toList() ??
-                [],
-            itemBuilder: (item) => RadioButtonBuilder(
-              item.trim().toUpperCase() == 'TEST_UNAVAILABLE'
-                  ? localizations.translate(
-                      "${selectedServiceDefinition?.code}.${item.trim().toUpperCase()}")
-                  : localizations
-                      .translate('CORE_COMMON_${item.trim().toUpperCase()}'),
-            ),
-          ),
-          // Validation Error Display
-          BlocBuilder<ServiceBloc, ServiceState>(
-            builder: (context, state) {
-              final hasError = (item.required == true &&
-                  controller[index].text.isEmpty &&
-                  submitTriggered);
-              return Offstage(
-                offstage: !hasError,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    localizations.translate(
-                      i18_local.common.corecommonRequired,
-                    ),
-                    style: TextStyle(color: theme.colorScheme.error),
-                  ),
-                ),
-              );
-            },
-          ),
+          Column(
+            children: [
+              BlocBuilder<ServiceBloc, ServiceState>(
+                builder: (context, state) {
+                  return RadioGroup<String>.builder(
+                    groupValue: controller[index].text.trim(),
+                    onChanged: (value) {
+                      setState(() {
+                        for (final matchingChildItem in childItems) {
+                          final childIndex =
+                              initialAttributes?.indexOf(matchingChildItem);
+                          if (childIndex != null) {
+                            visibleChecklistIndexes
+                                .removeWhere((v) => v == childIndex);
+                          }
+                        }
 
-          // Part 2: This is where the nested logic is implemented.
-          // If the current question has an answer, we build the next level.
-          if (childItems.isNotEmpty && controller[index].text.trim().isNotEmpty)
+                        // Update the current controller's value
+                        controller[index].value =
+                            TextEditingController.fromValue(
+                          TextEditingValue(
+                            text: value!,
+                          ),
+                        ).value;
+
+                        // Remove corresponding controllers based on the removed attributes
+                      });
+                    },
+                    items: item.values != null
+                        ? item.values!
+                            .where(
+                                (e) => e != i18_local.checklist.notSelectedKey)
+                            .toList()
+                        : [],
+                    itemBuilder: (item) => RadioButtonBuilder(
+                      item.trim().toUpperCase() == 'TEST_UNAVAILABLE'
+                          ? localizations.translate(
+                              "${selectedServiceDefinition?.code}.${item.trim().toUpperCase()}")
+                          : localizations.translate(
+                              'CORE_COMMON_${item.trim().toUpperCase()}'),
+                    ),
+                  );
+                },
+              ),
+              BlocBuilder<ServiceBloc, ServiceState>(
+                builder: (context, state) {
+                  final hasError = (item.required == true &&
+                      controller[index].text.isEmpty &&
+                      submitTriggered);
+
+                  return Offstage(
+                    offstage: !hasError,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        localizations.translate(
+                          i18_local.common.corecommonRequired,
+                        ),
+                        style: TextStyle(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          if (childItems.isNotEmpty &&
+              controller[index].text.trim().isNotEmpty) ...[
             _buildNestedChecklists(
               item.code.toString(),
+              index,
               controller[index].text.trim(),
               context,
             ),
+          ],
+        ],
+      );
+    } else if (item.dataType == 'String') {
+      const pattern = r'^[A-Za-z0-9\s]+$'; // Allows A-Z, a-z, 0-9, and spaces
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DigitTextField(
+          onChange: (value) {
+            checklistFormKey.currentState?.validate();
+          },
+          isRequired: item.required ?? true,
+          controller: controller[index],
+          validator: (value) {
+            if (((value == null || value == '') && item.required == true)) {
+              return localizations.translate("${item.code}_REQUIRED");
+            }
+            return (RegExp(item.regex ?? pattern).hasMatch(value!))
+                ? null
+                : localizations.translate("${item.code}_REGEX");
+          },
+          label: localizations.translate(
+            '${selectedServiceDefinition?.code}.${item.code}',
+          ),
+        ),
+      );
+    } else if (item.dataType == 'Number') {
+      return DigitTextField(
+        autoValidation: AutovalidateMode.onUserInteraction,
+        textStyle: theme.textTheme.headlineMedium,
+        textInputType: TextInputType.number,
+        inputFormatter: [
+          FilteringTextInputFormatter.allow(RegExp(
+            "[0-9]",
+          )),
+        ],
+        validator: (value) {
+          if (((value == null || value == '') && item.required == true)) {
+            return localizations.translate(
+              i18_local.common.corecommonRequired,
+            );
+          }
+          if (item.regex != null) {
+            return (RegExp(item.regex!).hasMatch(value!))
+                ? null
+                : localizations.translate("${item.code}_REGEX");
+          }
+
+          return null;
+        },
+        controller: controller[index],
+        label: '${localizations.translate(
+              '${selectedServiceDefinition?.code}.${item.code}',
+            ).trim()} ${item.required == true ? '*' : ''}',
+      );
+    } else if (item.dataType == 'MultiValueList') {
+      return Column(
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Text(
+                    '${localizations.translate(
+                      '${selectedServiceDefinition?.code}.${item.code}',
+                    )} ${item.required == true ? '*' : ''}',
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          BlocBuilder<ServiceBloc, ServiceState>(
+            builder: (context, state) {
+              return Column(
+                children: item.values!
+                    .map((e) => DigitCheckboxTile(
+                          label: e,
+                          value: controller[index].text.split('.').contains(e),
+                          onChanged: (value) {
+                            final String ele;
+                            var val = controller[index].text.split('.');
+                            if (val.contains(e)) {
+                              val.remove(e);
+                              ele = val.join(".");
+                            } else {
+                              ele = "${controller[index].text}.$e";
+                            }
+                            controller[index].value =
+                                TextEditingController.fromValue(
+                              TextEditingValue(
+                                text: ele,
+                              ),
+                            ).value;
+                          },
+                        ))
+                    .toList(),
+              );
+            },
+          ),
         ],
       );
     } else {
-      // Handles other non-nested question types like Text and Number
-      return _buildNonNestedChecklist(
-        item,
-        index,
-        selectedServiceDefinition,
-        context,
-      );
+      return const SizedBox.shrink();
     }
   }
-
-  // This widget builds the next level of the checklist.
-  // For example, if Q2 is "YES", this will build Q2.1 ("Malaria test result?").
-  // If Q2.1 is "POSITIVE", this will then build Q2.1.1 ("Treated with CTA?").
-  Widget _buildNestedChecklists(
-    String parentCode,
-    String parentControllerValue,
-    BuildContext context,
-  ) {
-    // Get all potential child questions.
-    final childItems = getNextQuestions(parentCode, initialAttributes ?? []);
-
-    // Filter to find the specific child questions that should be shown based on the parent's answer.
-    // For example, find questions with code "KBEA2.YES.*"
-    final visibleChildren = childItems.where((child) =>
-        child.code!.startsWith('$parentCode.$parentControllerValue.'));
-
-    return Column(
-      children: visibleChildren.map((matchingChildItem) {
-        final childIndex = initialAttributes?.indexOf(matchingChildItem);
-        if (childIndex == null) return const SizedBox.shrink();
-
-        // Recursively call _buildChecklist for each visible child.
-        // This is what creates the nested structure.
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8.0, left: 4.0, right: 4.0),
-          color: countDots(matchingChildItem.code ?? '') % 4 == 2
-              ? const Color.fromRGBO(238, 238, 238, 1)
-              : const DigitColors().white,
-          child: _buildChecklist(
-            matchingChildItem,
-            childIndex,
-            selectedServiceDefinition,
-            context,
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  /// Recursively finds all descendants of a parent question and clears their
-  /// text controllers. This is crucial for data integrity.
-  void _recursivelyClearState(String parentCode) {
-    final children = getNextQuestions(parentCode, initialAttributes ?? []);
-    for (final child in children) {
-      // Go deeper first to clear the grandchildren.
-      _recursivelyClearState(child.code.toString());
-
-      // Then clear the direct child's controller.
-      final childIndex = initialAttributes?.indexOf(child);
-      if (childIndex != null && childIndex < controller.length) {
-        controller[childIndex].clear();
-      }
-    }
-  }
-
-  // --- Other helper functions from your original code ---
 
   Widget getHighlightedText(String description) {
     // Find the position of the word "Proceed"
@@ -1042,6 +1206,42 @@ class _EligibilityChecklistViewPage
     return isDeliver;
   }
 
+  // Function to build nested checklists for child attributes
+  Widget _buildNestedChecklists(
+    String parentCode,
+    int parentIndex,
+    String parentControllerValue,
+    BuildContext context,
+  ) {
+    // Retrieve child items for the given parent code
+    final childItems = getNextQuestions(
+      parentCode,
+      initialAttributes ?? [],
+    );
+
+    return Column(
+      children: [
+        // Build cards for each matching child attribute
+        for (final matchingChildItem in childItems.where((childItem) =>
+            childItem.code!.startsWith('$parentCode.$parentControllerValue.')))
+          Card(
+            margin: const EdgeInsets.only(bottom: 8.0, left: 4.0, right: 4.0),
+            color: countDots(matchingChildItem.code ?? '') % 4 == 2
+                ? const Color.fromRGBO(238, 238, 238, 1)
+                : const DigitColors().white,
+            child: _buildChecklist(
+              matchingChildItem,
+              initialAttributes?.indexOf(matchingChildItem) ??
+                  parentIndex, // Pass parentIndex here as we're building at the same level
+              selectedServiceDefinition,
+              context,
+            ),
+          ),
+      ],
+    );
+  }
+
+  // Function to get the next questions (child attributes) based on a parent code
   List<AttributesModel> getNextQuestions(
     String parentCode,
     List<AttributesModel> checklistItems,
@@ -1106,106 +1306,6 @@ class _EligibilityChecklistViewPage
     }
     return false;
   }
-
-  // I have moved the logic for non-nested fields here to keep the main
-  // _buildChecklist function clean and focused on the recursive logic.
-  Widget _buildNonNestedChecklist(
-    AttributesModel item,
-    int index,
-    ServiceDefinitionModel? selectedServiceDefinition,
-    BuildContext context,
-  ) {
-    final theme = Theme.of(context);
-    if (item.dataType == 'String') {
-      return DigitTextField(
-        autoValidation: AutovalidateMode.onUserInteraction,
-        isRequired: true,
-        controller: controller[index],
-        validator: (value) {
-          if (((value == null || value == '') && item.required == true)) {
-            return localizations.translate(
-              i18_local.common.corecommonRequired,
-            );
-          }
-          if (item.regex != null) {
-            return (RegExp(item.regex!).hasMatch(value!))
-                ? null
-                : localizations.translate("${item.code}_REGEX");
-          }
-          return null;
-        },
-        label: localizations.translate(
-          '${selectedServiceDefinition?.code}.${item.code}',
-        ),
-      );
-    } else if (item.dataType == 'Number') {
-      return DigitTextField(
-        autoValidation: AutovalidateMode.onUserInteraction,
-        textStyle: theme.textTheme.headlineMedium,
-        textInputType: TextInputType.number,
-        inputFormatter: [
-          FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-        ],
-        validator: (value) {
-          if (((value == null || value == '') && item.required == true)) {
-            return localizations.translate(
-              i18_local.common.corecommonRequired,
-            );
-          }
-          if (item.regex != null) {
-            return (RegExp(item.regex!).hasMatch(value!))
-                ? null
-                : localizations.translate("${item.code}_REGEX");
-          }
-          return null;
-        },
-        controller: controller[index],
-        label:
-            '${localizations.translate('${selectedServiceDefinition?.code}.${item.code}').trim()} ${item.required == true ? '*' : ''}',
-      );
-    } else if (item.dataType == 'MultiValueList') {
-      return Column(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                '${localizations.translate('${selectedServiceDefinition?.code}.${item.code}')} ${item.required == true ? '*' : ''}',
-                style: theme.textTheme.headlineSmall,
-              ),
-            ),
-          ),
-          BlocBuilder<ServiceBloc, ServiceState>(
-            builder: (context, state) {
-              return Column(
-                children: item.values!
-                    .map((e) => DigitCheckboxTile(
-                          label: e,
-                          value: controller[index].text.split('.').contains(e),
-                          onChanged: (value) {
-                            final String ele;
-                            var val = controller[index].text.split('.');
-                            if (val.contains(e)) {
-                              val.remove(e);
-                              ele = val.join(".");
-                            } else {
-                              ele = "${controller[index].text}.$e";
-                            }
-                            controller[index].value =
-                                TextEditingController.fromValue(
-                              TextEditingValue(text: ele),
-                            ).value;
-                          },
-                        ))
-                    .toList(),
-              );
-            },
-          ),
-        ],
-      );
-    }
-    // Return an empty box for any other case
-    return const SizedBox.shrink();
-  }
 }
+
+

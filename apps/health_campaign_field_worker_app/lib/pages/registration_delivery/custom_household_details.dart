@@ -474,71 +474,71 @@ class CustomHouseHoldDetailsPageState
                               ),
                             ),
                           ),
-                          householdDetailsShowcaseData
-                              .numberOfMembersLivingInHousehold
-                              .buildWith(
-                            child: ReactiveWrapperField(
-                              formControlName: _memberCountKey,
-                              builder: (field) => LabeledField(
-                                label: (RegistrationDeliverySingleton()
-                                            .householdType ==
-                                        HouseholdType.community)
-                                    ? localizations.translate(
-                                        i18.householdDetails
-                                            .noOfMembersCountCLFLabel,
-                                      )
-                                    : localizations.translate(
-                                        i18.householdDetails
-                                            .noOfMembersCountLabel,
-                                      ),
-                                isRequired: true,
-                                child: DigitNumericFormInput(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  minValue: 1,
-                                  maxValue: !isCommunity ? 30 : 1000000,
-                                  maxLength: 5,
-                                  step: 1,
-                                  editable: isCommunity,
-                                  controller:
-                                      isCommunity ? _memberController : null,
-                                  initialValue: isCommunity
-                                      ? null
-                                      : form
-                                          .control(_memberCountKey)
-                                          .value
-                                          .toString(),
-                                  onChange: (value) {
-                                    if (value.isEmpty) {
-                                      _memberController.text = '1';
-                                      form.control(_memberCountKey).value = 1;
-                                      return;
-                                    }
-                                    // Remove leading zeros
-                                    String newValue = value;
+                          // householdDetailsShowcaseData
+                          //     .numberOfMembersLivingInHousehold
+                          //     .buildWith(
+                          //   child: ReactiveWrapperField(
+                          //     formControlName: _memberCountKey,
+                          //     builder: (field) => LabeledField(
+                          //       label: (RegistrationDeliverySingleton()
+                          //                   .householdType ==
+                          //               HouseholdType.community)
+                          //           ? localizations.translate(
+                          //               i18.householdDetails
+                          //                   .noOfMembersCountCLFLabel,
+                          //             )
+                          //           : localizations.translate(
+                          //               i18.householdDetails
+                          //                   .noOfMembersCountLabel,
+                          //             ),
+                          //       isRequired: true,
+                          //       child: DigitNumericFormInput(
+                          //         inputFormatters: [
+                          //           FilteringTextInputFormatter.digitsOnly
+                          //         ],
+                          //         minValue: 1,
+                          //         maxValue: !isCommunity ? 30 : 1000000,
+                          //         maxLength: 5,
+                          //         step: 1,
+                          //         editable: isCommunity,
+                          //         controller:
+                          //             isCommunity ? _memberController : null,
+                          //         initialValue: isCommunity
+                          //             ? null
+                          //             : form
+                          //                 .control(_memberCountKey)
+                          //                 .value
+                          //                 .toString(),
+                          //         onChange: (value) {
+                          //           if (value.isEmpty) {
+                          //             _memberController.text = '1';
+                          //             form.control(_memberCountKey).value = 1;
+                          //             return;
+                          //           }
+                          //           // Remove leading zeros
+                          //           String newValue = value;
 
-                                    if (value == '0' && isCommunity) {
-                                      newValue = '1';
-                                    }
-                                    _memberController.text = newValue;
-                                    form.control(_memberCountKey).value =
-                                        int.parse(newValue);
+                          //           if (value == '0' && isCommunity) {
+                          //             newValue = '1';
+                          //           }
+                          //           _memberController.text = newValue;
+                          //           form.control(_memberCountKey).value =
+                          //               int.parse(newValue);
 
-                                    int memberCount =
-                                        form.control(_memberCountKey).value;
-                                    // if (memberCount <=
-                                    //     pregnantWomen + children) {
-                                    //   form.control(_memberCountKey).value =
-                                    //       (children + pregnantWomen);
-                                    //   _memberController.text =
-                                    //       (children + pregnantWomen).toString();
-                                    // }
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
+                          //           int memberCount =
+                          //               form.control(_memberCountKey).value;
+                          //           // if (memberCount <=
+                          //           //     pregnantWomen + children) {
+                          //           //   form.control(_memberCountKey).value =
+                          //           //       (children + pregnantWomen);
+                          //           //   _memberController.text =
+                          //           //       (children + pregnantWomen).toString();
+                          //           // }
+                          //         },
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                           //[TODO: Use pregnant women form value based on project config
                           // A - Number of children 0 to 59 months
 
