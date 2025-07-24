@@ -47,20 +47,20 @@ class CustomBeneficiaryAcknowledgementPageState
       registration_delivery.HouseholdMemberWrapper? householdMember,
       HouseholdModel? household,
       BeneficiaryRegistrationState? registrationState) {
-    if (widget.acknowledgementType == AcknowledgementType.addHousehold) {
-      final householdId = household?.additionalFields?.fields
-          .where((field) =>
-              field.key == IdentifierTypes.uniqueBeneficiaryID.toValue())
-          .first
-          .value;
-      return householdId == null
-          ? null
-          : {
-              'id': localizations
-                  .translate(i18_local.beneficiaryDetails.householdId),
-              'value': householdId,
-            };
-    } else {
+    // if (widget.acknowledgementType == AcknowledgementType.addHousehold) {
+    //   final householdId = household?.additionalFields?.fields
+    //       .where((field) =>
+    //           field.key == IdentifierTypes.uniqueBeneficiaryID.toValue())
+    //       .first
+    //       .value;
+    //   return householdId == null
+    //       ? null
+    //       : {
+    //           'id': localizations
+    //               .translate(i18_local.beneficiaryDetails.householdId),
+    //           'value': householdId,
+    //         };
+    // } else {
       String? beneficiaryId;
       
       // If we have an editIndividual or persisted state, use the edited individual's ID
@@ -81,7 +81,7 @@ class CustomBeneficiaryAcknowledgementPageState
             }
           },
         );
-      }
+      // }
       
       // Fall back to the last member if no edit state or no ID found
       beneficiaryId ??= householdMember?.members?.lastOrNull?.identifiers
