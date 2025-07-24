@@ -199,15 +199,15 @@ class CustomSideEffectsPageState extends LocalizedState<CustomSideEffectsPage> {
                                                         ),
                                                       );
                                                       // TODO: Currently, it's been shifted to the zero dose flow
-                                                      // context
-                                                      //     .read<
-                                                      //         SideEffectsBloc>()
-                                                      //     .add(
-                                                      //       SideEffectsSubmitEvent(
-                                                      //         sideEffect!,
-                                                      //         false,
-                                                      //       ),
-                                                      //     );
+                                                      context
+                                                          .read<
+                                                              SideEffectsBloc>()
+                                                          .add(
+                                                            SideEffectsSubmitEvent(
+                                                              sideEffect!,
+                                                              false,
+                                                            ),
+                                                          );
                                                       Navigator.of(
                                                         context,
                                                         rootNavigator: true,
@@ -237,7 +237,34 @@ class CustomSideEffectsPageState extends LocalizedState<CustomSideEffectsPage> {
                                             );
 
                                             if (shouldSubmit ?? false) {
-                                              submitSideEffects(sideEffect!);
+                                              final reloadState = context.read<
+                                                  HouseholdOverviewBloc>();
+
+                                              Future.delayed(
+                                                const Duration(
+                                                    milliseconds: 500),
+                                                () {
+                                                  reloadState.add(
+                                                    HouseholdOverviewReloadEvent(
+                                                      projectId:
+                                                          RegistrationDeliverySingleton()
+                                                              .projectId!,
+                                                      projectBeneficiaryType:
+                                                          RegistrationDeliverySingleton()
+                                                              .beneficiaryType!,
+                                                    ),
+                                                  );
+                                                },
+                                              ).then(
+                                                (value) => context.router.push(
+                                                  CustomHouseholdAcknowledgementRoute(
+                                                    enableViewHousehold: true,
+                                                    eligibilityAssessmentType:
+                                                        EligibilityAssessmentType
+                                                            .smc,
+                                                  ),
+                                                ),
+                                              );
                                             }
                                           } else {
                                             setState(() {
@@ -354,29 +381,6 @@ class CustomSideEffectsPageState extends LocalizedState<CustomSideEffectsPage> {
             },
           );
         },
-      ),
-    );
-  }
-
-  void submitSideEffects(SideEffectModel sideEffect) async {
-    final reloadState = context.read<HouseholdOverviewBloc>();
-
-    Future.delayed(
-      const Duration(milliseconds: 500),
-      () {
-        reloadState.add(
-          HouseholdOverviewReloadEvent(
-            projectId: RegistrationDeliverySingleton().projectId!,
-            projectBeneficiaryType:
-                RegistrationDeliverySingleton().beneficiaryType!,
-          ),
-        );
-      },
-    ).then(
-      (value) => context.router.push(
-        HouseholdAcknowledgementRoute(
-          enableViewHousehold: true,
-        ),
       ),
     );
   }
