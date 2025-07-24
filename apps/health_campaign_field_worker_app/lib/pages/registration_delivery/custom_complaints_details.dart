@@ -442,7 +442,7 @@ class CustomComplaintsDetailsPageState
                               'startsWith6': (object) =>
                                     localizations.translate(i18_local
                                         .individualDetails
-                                        .mobileNumberStartWith6ValidationMessageUpdated),
+                                        .mobileNumberStartWith6ValidationMessageNewUpdated),
                               // 'minLength': (object) => localizations.translate(
                               //     i18.complaints.validationMinLengthError),
                               // 'maxLength': (object) => localizations
@@ -530,10 +530,10 @@ class CustomComplaintsDetailsPageState
                               //     localizations.translate(i18_local
                               //         .individualDetails
                               //         .mobileNumberStartWith7or9ValidationMessage),
-                               'startsWith6': (object) =>
+                               'startsWith6': (object) => 
                                     localizations.translate(i18_local
                                         .individualDetails
-                                        .mobileNumberStartWith6ValidationMessageUpdated),
+                                        .mobileNumberStartWith6ValidationMessageNewUpdated),
                             },
                             builder: (field) {
                               return LabeledField(

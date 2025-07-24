@@ -456,6 +456,7 @@ class CustomMemberCard extends StatelessWidget {
                               eligibilityAssessmentType:
                                   EligibilityAssessmentType.smc,
                               enableRouteToZeroDose: false,
+                              enableBackToSearch: true,
                               task: refusalTask,
                             ),
                           ),

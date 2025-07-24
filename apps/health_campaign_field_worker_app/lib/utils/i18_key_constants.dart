@@ -1048,10 +1048,15 @@ class AcknowledgementSuccess {
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_DISPATCH";
   String get acknowledgementDescriptionTextLoss =>
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_LOSS";
+  String get acknowledgementDescriptionTextLossUpdated =>
+  "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_LOSS_UPDATED";
   String get acknowledgementDescriptionTextDamaged =>
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_DAMAGED";
   String get acknowledgementDescriptionTextReceipt =>
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_RECEIPT";
+
+  String get acknowledgementDescriptionTextReceiptUpdated =>
+      "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_RECEIPT_UPDATED";
 
   String get mrrnNumberDescription => "MRRN_NUMBER_DESCRIPTION";
 
@@ -1425,6 +1430,8 @@ class IndividualDetails {
 
   String get mobileNumberStartWith6ValidationMessageUpdated =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_6_UPDATED';
+  String get mobileNumberStartWith6ValidationMessageNewUpdated =>
+      'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_6_NEW_UPDATED';
 
   String get individualDetailsNameLabelTextUpdate =>
       'INDIVIDUAL_DETAILS_NAME_LABEL_TEXT_UPDATE';
