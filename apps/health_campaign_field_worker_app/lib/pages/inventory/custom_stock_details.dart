@@ -67,7 +67,7 @@ class CustomStockDetailsPageState
   static const _deliveryTeamKey = 'deliveryTeam';
   static const _supervisorKey = 'supervisor';
 
-  static int maxQuantity = 100000000;
+  static int maxQuantity = 10000;
   static int minQuantity = 0;
   bool deliveryTeamSelected = false;
   String? selectedFacilityId;
@@ -94,7 +94,7 @@ class CustomStockDetailsPageState
         Validators.number(),
         Validators.required,
         Validators.min(1),
-        Validators.max(100000000),
+        Validators.max(10000),
       ]),
       _transactionReasonKey: FormControl<String>(),
       _waybillNumberKey: FormControl<String>(
@@ -308,6 +308,18 @@ class CustomStockDetailsPageState
                                 onPressed: () async {
                                   form.markAllAsTouched();
                                   if (!form.valid) {
+                                    // Check if the only error is quantity exceeding max limit
+                                    final quantityControl = form.control(_transactionQuantityKey);
+                                    final quantityError = quantityControl.errors;
+                                    
+                                    // If the error is specifically about max validation, don't show toast
+                                    // since the error message is already visible below the input field
+                                    if (quantityError != null && quantityError.containsKey('max')) {
+                                      // Don't show toast, just return to keep submit disabled
+                                      return;
+                                    }
+                                    
+                                    // For other validation errors, show the generic toast
                                     Toast.showToast(
                                       context,
                                       type: ToastType.error,
@@ -1222,7 +1234,7 @@ class CustomStockDetailsPageState
                                           case StockRecordEntryType.receipt:
                                             descriptionText = i18_local
                                                 .acknowledgementSuccess
-                                                .acknowledgementDescriptionTextReceipt;
+                                                .acknowledgementDescriptionTextReceiptUpdated;
                                             break;
                                           case StockRecordEntryType.dispatch:
                                             descriptionText = i18_local
@@ -1235,9 +1247,10 @@ class CustomStockDetailsPageState
                                                 .acknowledgementDescriptionTextReturned;
                                             break;
                                           case StockRecordEntryType.loss:
-                                            descriptionText = i18_local
-                                                .acknowledgementSuccess
-                                                .acknowledgementDescriptionTextLoss;
+                                            descriptionText =  i18_local
+                                               .acknowledgementSuccess
+                                               .acknowledgementDescriptionTextLossUpdated;
+                                           
                                             break;
                                           case StockRecordEntryType.damaged:
                                             descriptionText = i18_local
@@ -1764,12 +1777,9 @@ class CustomStockDetailsPageState
                                           if (val.isEmpty || val.trim() == '') {
                                             field.control.value = null;
                                           } else {
-                                            if (int.parse(val) > 10000000000) {
-                                              field.control.value = 10000;
-                                              field.control.markAsTouched();
-                                            } else {
-                                              field.control.value =
-                                                  int.parse(val);
+                                            final intVal = int.tryParse(val);
+                                            if (intVal != null) {
+                                              field.control.value = intVal;
                                               field.control.markAsTouched();
                                             }
                                           }
