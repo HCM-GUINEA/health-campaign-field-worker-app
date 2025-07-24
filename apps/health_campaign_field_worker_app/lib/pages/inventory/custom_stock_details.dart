@@ -32,12 +32,11 @@ import '../../utils/constants.dart';
 import '../../utils/extensions/extensions.dart';
 import '../../utils/i18_key_constants.dart' as i18_local;
 
-
 @RoutePage()
 class CustomStockDetailsPage extends LocalizedStatefulWidget {
   final String? passage;
   final String? jour;
-  
+
   const CustomStockDetailsPage({
     super.key,
     super.appLocalizations,
@@ -708,7 +707,7 @@ class CustomStockDetailsPageState
                                                       'jour_de_passage',
                                                       widget.jour!,
                                                     ),
-                                                   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                                                   if (scannerState
                                                       .barCodes.isNotEmpty)
                                                     addBarCodesToFields(
@@ -1475,6 +1474,28 @@ class CustomStockDetailsPageState
                                                       element.usage ==
                                                       Constants.lgaFacility)
                                                   .toList();
+                                        } // [START] PWHM (Prefecture/Provincial) LOGIC IMPLEMENTATION
+                                        else if (context.selectedProject.address
+                                                ?.boundaryType ==
+                                            Constants.lgaBoundaryLevel) {
+                                          // The user is logged in at the Prefecture (Provincial) level.
+                                          if (entryType ==
+                                              StockRecordEntryType.receipt) {
+                                            // For "Receipts", the "Received From" dropdown should only show the upper-level warehouse. (stateFacility).
+                                            filteredFacilities = allFacilities
+                                                .where((element) =>
+                                                    element.usage ==
+                                                    Constants
+                                                        .prefectureFacility)
+                                                .toList();
+                                          } else {
+                                            // For "Dispatch", "Return", "Damaged", and "Loss": The dropdown for the other party should only show the lower-level warehouses (lgaFacility).
+                                            filteredFacilities = allFacilities
+                                                .where((element) =>
+                                                    element.usage ==
+                                                    Constants.lgaFacility)
+                                                .toList();
+                                          }
                                         } else if (context.selectedProject
                                                 .address?.boundaryType ==
                                             Constants.lgaBoundaryLevel) {
