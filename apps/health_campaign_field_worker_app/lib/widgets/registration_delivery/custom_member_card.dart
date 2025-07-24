@@ -266,50 +266,6 @@ class CustomMemberCard extends StatelessWidget {
     final redosePendingStatus = smcAssessmentPendingStatus
         ? true
         : redosePending(smcTasks, context.selectedCycle);
-
-    // if (!isHead &&
-    //     isNotEligibleSMC &&
-    //     !isSMCDelivered &&
-    //     !isBeneficiaryReferredSMC &&
-    //     !isBeneficiaryInEligibleSMC &&
-    //     !hasBeneficiaryRefused &&
-    //     ageInMonths < 3 ) {
-    //   return Column(
-    //     children: [
-    //       DigitElevatedButton(
-    //         child: Center(
-    //           child: Text(
-    //             localizations.translate(
-    //               i18_local
-    //                   .householdOverView.householdOverViewZeroDoseActionText,
-    //             ),
-    //             style: textTheme.headingM.copyWith(color: Colors.white),
-    //           ),
-    //         ),
-    //         onPressed: () async {
-    //           final bloc = context.read<HouseholdOverviewBloc>();
-    //           bloc.add(
-    //             HouseholdOverviewEvent.selectedIndividual(
-    //               individualModel: individual,
-    //             ),
-    //           );
-    //           // if ((smcTasks ?? []).isEmpty) {
-    //           context.router.push(
-    //             ZeroDoseCheckRoute(
-    //               eligibilityAssessmentType: EligibilityAssessmentType.smc,
-    //               isAdministration: false,
-    //               isChecklistAssessmentDone: false,
-    //               projectBeneficiaryClientReferenceId:
-    //                   projectBeneficiaryClientReferenceId,
-    //               individual: individual,
-    //             ),
-    //           );
-    //           // }
-    //         },
-    //       ),
-    //     ],
-    //   );
-    // }
     if ((isNotEligibleSMC || isBeneficiaryIneligible) && !doseStatus)
       return const Offstage();
     if (isNotEligibleSMC || (!redosePendingStatus)) {
@@ -689,6 +645,49 @@ class CustomMemberCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     final beneficiaryType = context.beneficiaryType;
+    final ProjectTypeModel projectType =
+        RegistrationDeliverySingleton().projectType!;
+    final lastDose = tasks != null && tasks!.isNotEmpty
+        ? tasks?.last.additionalFields?.fields
+                .firstWhereOrNull(
+                  (e) =>
+                      e.key ==
+                      additional_fields_local.AdditionalFieldsType.doseIndex
+                          .toValue(),
+                )
+                ?.value ??
+            '1'
+        : '0';
+    final lastCycle = tasks != null && tasks!.isNotEmpty
+        ? tasks?.last.additionalFields?.fields
+                .firstWhereOrNull(
+                  (e) =>
+                      e.key ==
+                      additional_fields_local.AdditionalFieldsType.cycleIndex
+                          .toValue(),
+                )
+                ?.value ??
+            '1'
+        : '1';
+    final bloc = context.read<DeliverInterventionBloc>();
+    bloc.add(
+      DeliverInterventionEvent.setActiveCycleDose(
+        lastDose: tasks != null && tasks!.isNotEmpty
+            ? int.tryParse(
+                  lastDose,
+                ) ??
+                1
+            : 0,
+        lastCycle: tasks != null && tasks!.isNotEmpty
+            ? int.tryParse(
+                  lastCycle,
+                ) ??
+                1
+            : 1,
+        individualModel: individual,
+        projectType: projectType,
+      ),
+    );
 
     return Container(
       decoration: BoxDecoration(

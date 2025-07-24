@@ -825,7 +825,7 @@ class CustomIndividualDetailsPageState
                                               i18.individualDetails
                                                   .idNumberLabelText,
                                             ),
-                                            isRequired: true,
+                                            isRequired: false,
                                             child: DigitTextFormInput(
                                               inputFormatters: [
                                                 UpperCaseTextFormatter(),
@@ -956,6 +956,7 @@ class CustomIndividualDetailsPageState
                         ),
                         // 5. GENDER
                         dropdown.DigitDropdown<String>(
+                          isRequired: true,
                           label: localizations.translate(
                             i18.individualDetails.genderLabelText,
                           ),
@@ -1308,6 +1309,7 @@ class CustomIndividualDetailsPageState
 
     String? individualName = form.control(_individualNameKey).value as String?;
     final isResident = form.control(_isResidentKey).value as String?;
+    final additionFields = individual.additionalFields?.fields ?? [];
     individual = individual.copyWith(
       name: name.copyWith(
         givenName: individualName?.trim(),
@@ -1329,13 +1331,19 @@ class CustomIndividualDetailsPageState
       additionalFields: IndividualAdditionalFields(
         version: 1,
         fields: [
-          AdditionalField(
-            'previousBeneficiaryId',
-            form.control(_previousBeneficiaryIdKey).value ?? '',
-            // previousBeneficiaryId,
-          ),
-          // We conditionally add it to the list of fields.
+          if (form.control(_previousBeneficiaryIdKey).value != null &&
+              form.control(_previousBeneficiaryIdKey).value != '')
+            AdditionalField(
+              'previousBeneficiaryId',
+              form.control(_previousBeneficiaryIdKey).value ?? '',
+            ),
           if (isResident != null) AdditionalField('isResident', isResident),
+          if (form.control(_idTypeKey).value != null &&
+              form.control(_idTypeKey).value != 'DEFAULT')
+            AdditionalField(
+              form.control(_idTypeKey).value ?? '',
+              form.control(_idNumberKey).value ?? '',
+            ),
         ],
       ),
       // additionalFields: IndividualAdditionalFields(version: 1, fields: [

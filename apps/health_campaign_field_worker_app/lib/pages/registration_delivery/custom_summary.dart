@@ -295,25 +295,26 @@ class CustomSummaryPageState extends LocalizedState<CustomSummaryPage> {
                           margin: const EdgeInsets.all(spacer2),
                           children: [
                             LabelValueSummary(
-                                padding: EdgeInsets.zero,
+                              withDivider: true,
+                                padding: const EdgeInsets.fromLTRB(spacer2, 0, spacer2, 0),
                                 heading: localizations.translate(
                                     i18.householdDetails.householdDetailsLabel),
                                 headingStyle: textTheme.headingL.copyWith(
                                   color: theme.colorTheme.primary.primary2,
                                 ),
                                 items: [
-                                  LabelValueItem(
-                                      label: localizations.translate(i18
-                                          .householdDetails
-                                          .noOfMembersCountLabel),
-                                      value: householdState
-                                              .householdModel?.memberCount
-                                              .toString() ??
-                                          '0',
-                                      isInline: true,
-                                      labelFlex: 5,
-                                      padding: const EdgeInsets.only(
-                                          bottom: spacer2)),
+                                  // LabelValueItem(
+                                  //     label: localizations.translate(i18
+                                  //         .householdDetails
+                                  //         .noOfMembersCountLabel),
+                                  //     value: householdState
+                                  //             .householdModel?.memberCount
+                                  //             .toString() ??
+                                  //         '0',
+                                  //     isInline: true,
+                                  //     labelFlex: 5,
+                                  //     padding: const EdgeInsets.only(
+                                  //         bottom: spacer2)),
                                   // ++ ADD THESE THREE LabelValueItem WIDGETS ++
                                   LabelValueItem(
                                     label: localizations.translate(
