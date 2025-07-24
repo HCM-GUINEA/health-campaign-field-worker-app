@@ -47,7 +47,7 @@ class _BoundarySelectionPageState
   late StreamSubscription syncSubscription;
   var leastLevelBoundaries;
 
-  final String setLocale = "fr_TG";
+  final String setLocale = "fr_GI";
 
   @override
   void initState() {
