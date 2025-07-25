@@ -298,6 +298,7 @@ class Checklist {
 class ReferBeneficiary {
   const ReferBeneficiary();
 
+  String get maxAgeOfReferralBeneficiary => 'MAX_AGE_OF_REFERRAL_BENEFICIARY_NEW';
   String get dateOfReferralLabel => 'REFER_BENEFICIARY_DATE_OF_REFERRAL_LABEL';
   String get dateOfEvaluationLabel =>
       'REFER_BENEFICIARY_DATE_OF_EVALUATION_LABEL';
@@ -1527,6 +1528,16 @@ class IndividualDetails {
 
 class BeneficiaryDetails {
   const BeneficiaryDetails();
+
+
+  String get validationForExcessStockIssue =>
+      "ERROR_VALIDATION_FOR_EXCESS_STOCK_ISSUED_UPDATED";
+
+   String get validationForExcessStockLoss =>
+      "ERROR_VALIDATION_FOR_EXCESS_STOCK_LOSS_UPDATED";
+
+  String get validationForExcessStockDamaged =>
+      "ERROR_VALIDATION_FOR_EXCESS_STOCK_DAMAGED_UPDATED";
 
   String get validationForExcessStockDispatch =>
       "ERROR_VALIDATION_FOR_EXCESS_STOCK_DISPATCH";

@@ -860,15 +860,15 @@ class CustomStockDetailsPageState
                                               await DigitToast.show(
                                                 context,
                                                 options: DigitToastOptions(
-                                                    localizations.translate(context
-                                                                .isCDD ||
+                                                    localizations.translate(
                                                             entryType ==
                                                                 StockRecordEntryType
-                                                                    .returned
+                                                                    .returned 
                                                         ? i18_local
                                                             .beneficiaryDetails
                                                             .validationForExcessStockReturn
-                                                        : i18_local
+                                                        : (entryType == StockRecordEntryType.damaged) ? localizations.translate(i18_local.beneficiaryDetails.validationForExcessStockDamaged) : entryType == StockRecordEntryType.loss ? localizations.translate(i18_local.beneficiaryDetails.validationForExcessStockLoss):
+                                                            i18_local 
                                                             .beneficiaryDetails
                                                             .validationForExcessStockDispatch),
                                                     true,
@@ -880,15 +880,14 @@ class CustomStockDetailsPageState
                                               await DigitToast.show(
                                                 context,
                                                 options: DigitToastOptions(
-                                                    localizations.translate(context
-                                                                .isCDD ||
-                                                            entryType ==
+                                                    localizations.translate(  entryType ==
                                                                 StockRecordEntryType
-                                                                    .returned
+                                                                    .returned 
                                                         ? i18_local
                                                             .beneficiaryDetails
                                                             .validationForExcessStockReturn
-                                                        : i18_local
+                                                        : (entryType == StockRecordEntryType.damaged) ?  localizations.translate(i18_local.beneficiaryDetails.validationForExcessStockDamaged)  : entryType == StockRecordEntryType.loss ? localizations.translate(i18_local.beneficiaryDetails.validationForExcessStockLoss):
+                                                            i18_local 
                                                             .beneficiaryDetails
                                                             .validationForExcessStockDispatch),
                                                     true,
@@ -1040,12 +1039,11 @@ class CustomStockDetailsPageState
                                               await DigitToast.show(
                                                 context,
                                                 options: DigitToastOptions(
-                                                    localizations.translate(context
-                                                            .isCDD
-                                                        ? i18_local
+                                                    context.isCDD
+                                                        ? localizations.translate(i18_local
                                                             .beneficiaryDetails
-                                                            .validationForExcessStockReturn
-                                                        : i18_local
+                                                            .validationForExcessStockReturn)
+                                                        : localizations.translate(i18_local
                                                             .beneficiaryDetails
                                                             .validationForExcessStockDispatch),
                                                     true,
@@ -1060,12 +1058,11 @@ class CustomStockDetailsPageState
                                               await DigitToast.show(
                                                 context,
                                                 options: DigitToastOptions(
-                                                    localizations.translate(context
-                                                            .isCDD
-                                                        ? i18_local
+                                                    context.isCDD
+                                                        ? localizations.translate(i18_local
                                                             .beneficiaryDetails
-                                                            .validationForExcessStockReturn
-                                                        : i18_local
+                                                            .validationForExcessStockReturn)
+                                                        : localizations.translate(i18_local
                                                             .beneficiaryDetails
                                                             .validationForExcessStockDispatch),
                                                     true,
