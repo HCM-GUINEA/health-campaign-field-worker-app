@@ -273,13 +273,13 @@ class CustomMemberCard extends StatelessWidget {
     }
     return BlocBuilder<DeliverInterventionBloc, DeliverInterventionState>(
         builder: (context, deliverState) {
-      List<TaskModel>? pastTasks = tasks;
+      List<TaskModel>? filteredTasks = tasks;
       if (tasks?.lastOrNull?.status ==
           Status.beneficiaryRefused.toValue().toString()) {
-        pastTasks?.removeLast();
+        filteredTasks?.removeLast();
       }
-      final lastDose = pastTasks != null && pastTasks!.isNotEmpty
-          ? pastTasks?.last.additionalFields?.fields
+      final lastDose = filteredTasks != null && filteredTasks!.isNotEmpty
+          ? filteredTasks?.last.additionalFields?.fields
                   .firstWhereOrNull(
                     (e) =>
                         e.key ==
@@ -287,10 +287,10 @@ class CustomMemberCard extends StatelessWidget {
                             .toValue(),
                   )
                   ?.value ??
-              '1'
+              '0'
           : '0';
-      final lastCycle = pastTasks != null && pastTasks!.isNotEmpty
-          ? pastTasks?.last.additionalFields?.fields
+      final lastCycle = filteredTasks != null && filteredTasks!.isNotEmpty
+          ? filteredTasks?.last.additionalFields?.fields
                   .firstWhereOrNull(
                     (e) =>
                         e.key ==
@@ -340,10 +340,41 @@ class CustomMemberCard extends StatelessWidget {
                 ),
               ),
               onPressed: () async {
+                // Calculate the current cycle. If deliverInterventionState.cycle is negative, set it to 0.
+                final currentCycle =
+                    deliverState.cycle >= 0 ? deliverState.cycle : 0;
+
+                // Calculate the current dose. If deliverInterventionState.dose is negative, set it to 0.
+                final currentDose =
+                    deliverState.dose >= 0 ? deliverState.dose : 0;
+
+                final item = projectType
+                    .cycles?[currentCycle - 1].deliveries?[currentDose - 1];
+                final productVariants =
+                    fetchProductVariant(item, individual, null)
+                        ?.productVariants!
+                        .first;
+
+                // Retrieve the SKU value for the product variant.
+                final value = variant
+                    ?.firstWhereOrNull(
+                      (element) =>
+                          element.id == productVariants!.productVariantId,
+                    )
+                    ?.sku;
+
                 final spaq1 = context.spaq1;
                 final spaq2 = context.spaq2;
 
-                if (spaq1 > 0 && spaq2 > 0) {
+                if (value != null &&
+                    ((value.contains(
+                              Constants.spaq1,
+                            ) &&
+                            spaq1 > 0) ||
+                        (value.contains(
+                              Constants.spaq2,
+                            ) &&
+                            spaq2 > 0))) {
                   final bloc = context.read<HouseholdOverviewBloc>();
                   bloc.add(
                     HouseholdOverviewEvent.selectedIndividual(
@@ -482,11 +513,16 @@ class CustomMemberCard extends StatelessWidget {
                           );
 
                           // TODO: Currently it's been shifted to the zero dose flow
-
+                          final deliverState =
+                              context.read<DeliverInterventionBloc>().state;
                           context.read<DeliverInterventionBloc>().add(
                                 DeliverInterventionSubmitEvent(
                                   task: refusalTask,
-                                  isEditing: false,
+                                  isEditing:
+                                      (deliverState.tasks ?? []).isNotEmpty &&
+                                          RegistrationDeliverySingleton()
+                                                  .beneficiaryType ==
+                                              BeneficiaryType.household,
                                   boundaryModel:
                                       RegistrationDeliverySingleton().boundary!,
                                 ),
