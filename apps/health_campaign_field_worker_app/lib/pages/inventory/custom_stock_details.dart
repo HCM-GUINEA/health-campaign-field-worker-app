@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:digit_components/widgets/atoms/digit_toaster.dart';
 import 'package:digit_data_model/data_model.dart';
 import 'package:digit_scanner/blocs/scanner.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../../utils/upper_case.dart';
 import '../../utils/utils.dart';
@@ -308,16 +309,19 @@ class CustomStockDetailsPageState
                                   form.markAllAsTouched();
                                   if (!form.valid) {
                                     // Check if the only error is quantity exceeding max limit
-                                    final quantityControl = form.control(_transactionQuantityKey);
-                                    final quantityError = quantityControl.errors;
-                                    
+                                    final quantityControl =
+                                        form.control(_transactionQuantityKey);
+                                    final quantityError =
+                                        quantityControl.errors;
+
                                     // If the error is specifically about max validation, don't show toast
                                     // since the error message is already visible below the input field
-                                    if (quantityError != null && quantityError.containsKey('max')) {
+                                    if (quantityError != null &&
+                                        quantityError.containsKey('max')) {
                                       // Don't show toast, just return to keep submit disabled
                                       return;
                                     }
-                                    
+
                                     // For other validation errors, show the generic toast
                                     Toast.showToast(
                                       context,
@@ -1246,10 +1250,10 @@ class CustomStockDetailsPageState
                                                 .acknowledgementDescriptionTextReturned;
                                             break;
                                           case StockRecordEntryType.loss:
-                                            descriptionText =  i18_local
-                                               .acknowledgementSuccess
-                                               .acknowledgementDescriptionTextLossUpdated;
-                                           
+                                            descriptionText = i18_local
+                                                .acknowledgementSuccess
+                                                .acknowledgementDescriptionTextLossUpdated;
+
                                             break;
                                           case StockRecordEntryType.damaged:
                                             descriptionText = i18_local
@@ -1444,7 +1448,8 @@ class CustomStockDetailsPageState
                                         List<FacilityModel> filteredFacilities =
                                             [];
 
-                                        if (context.selectedProject.address
+                                        /*Old Logic
+                                          if (context.selectedProject.address
                                                 ?.boundaryType ==
                                             Constants.countryBoundaryLevel) {
                                           filteredFacilities = entryType ==
@@ -1485,15 +1490,20 @@ class CustomStockDetailsPageState
                                             filteredFacilities = allFacilities
                                                 .where((element) =>
                                                     element.usage ==
-                                                    Constants
-                                                        .prefectureFacility)
+                                                        Constants
+                                                            .prefectureFacility &&
+                                                    element.id !=
+                                                        currentWarehouseId)
                                                 .toList();
                                           } else {
                                             // For "Dispatch", "Return", "Damaged", and "Loss": The dropdown for the other party should only show the lower-level warehouses (lgaFacility).
                                             filteredFacilities = allFacilities
                                                 .where((element) =>
                                                     element.usage ==
-                                                    Constants.lgaFacility)
+                                                        Constants
+                                                            .prefectureFacility &&
+                                                    element.id !=
+                                                        currentWarehouseId)
                                                 .toList();
                                           }
                                         } else if (context.selectedProject
@@ -1540,12 +1550,327 @@ class CustomStockDetailsPageState
                                         facilities =
                                             context.isHealthFacilitySupervisor &&
                                                     entryType !=
-                                                        StockRecordEntryType
+                                                      StockRecordEntryType
                                                             .receipt
                                                 ? []
                                                 : filteredFacilities.isEmpty
                                                     ? facilities
                                                     : filteredFacilities;
+                                                    */
+
+                                        final boundaryType = context
+                                            .selectedProject
+                                            .address
+                                            ?.boundaryType;
+                                        final entryType = context
+                                            .read<RecordStockBloc>()
+                                            .state
+                                            .entryType;
+                                        final currentWarehouseId = context
+                                            .read<RecordStockBloc>()
+                                            .state
+                                            .primaryId;
+
+                                        // A utility to filter a list of facilities by usage, while always excluding the current user's warehouse.
+                                        List<FacilityModel> filterByUsage(
+                                            String usage) {
+                                          return allFacilities
+                                              .where((f) =>
+                                                  f.usage == usage &&
+                                                  f.id != currentWarehouseId)
+                                              .toList();
+                                        }
+
+                                        //  Case: Logged-in user is National Warehouse
+                                        if (boundaryType ==
+                                            Constants.countryBoundaryLevel) {
+                                          if (kDebugMode) {
+                                            print(
+                                                "National Warehouse condition matched!");
+                                          }
+
+                                          if (entryType ==
+                                              StockRecordEntryType.receipt) {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "National: Receipt operation - no suppliers (top of hierarchy)");
+                                            }
+                                            // National receives from no one (top of hierarchy).
+                                            filteredFacilities = [];
+                                          } else {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "National: Dispatch/Issue/Loss/Damaged/Return operation - showing child Regional Warehouses");
+                                            }
+                                            // National sends/manages ONLY Regional Warehouses (their children)
+                                            filteredFacilities = allFacilities
+                                                .where((f) =>
+                                                    f.usage ==
+                                                        Constants
+                                                            .stateFacility &&
+                                                    f.id != currentWarehouseId)
+                                                .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "National Non-Receipt facilities: $filteredFacilities");
+                                            }
+                                          }
+                                        }
+
+                                        // Case: Logged-in user is Regional Warehouse (RWHM)
+                                        else if (boundaryType ==
+                                            Constants.stateBoundaryLevel) {
+                                          if (kDebugMode) {
+                                            print(
+                                                "Regional Warehouse (RWHM) condition matched!");
+                                          }
+
+                                          if (entryType ==
+                                              StockRecordEntryType.receipt) {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "RWHM: Receipt operation - showing National Warehouse as supplier");
+                                            }
+                                            // Rule 2: RWHM receives ONLY from National Warehouse
+                                            filteredFacilities = allFacilities
+                                                .where((f) =>
+                                                    f.usage ==
+                                                        Constants
+                                                            .centralFacility &&
+                                                    f.id != currentWarehouseId)
+                                                .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "RWHM Receipt facilities: $filteredFacilities");
+                                            }
+                                          } else {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "RWHM: Dispatch/Issue/Loss/Damaged/Return operation - showing child Prefecture Warehouses");
+                                            }
+                                            // Rule 3 & 4: RWHM sends/manages ONLY Prefecture Warehouses that are their children
+                                            // For now, we'll show all Prefecture facilities, but this should be filtered by hierarchy
+                                            filteredFacilities = allFacilities
+                                                .where((f) =>
+                                                    f.usage ==
+                                                        Constants
+                                                            .prefectureFacility &&
+                                                    f.id != currentWarehouseId)
+                                                .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "RWHM Non-Receipt facilities: $filteredFacilities");
+                                            }
+                                          }
+                                        }
+
+                                        // Case: Logged-in user is Prefecture Warehouse (PWHM)
+                                        // Note: Using prefectureBoundaryLevel as it's more specific than the old code's lgaBoundaryLevel
+                                        else if (boundaryType ==
+                                            Constants.prefectureBoundaryLevel) {
+                                          if (kDebugMode) {
+                                            print(
+                                                "Prefecture Warehouse (PWHM) condition matched!");
+                                          }
+
+                                          if (entryType ==
+                                              StockRecordEntryType.receipt) {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "PWHM: Receipt operation - showing parent Regional Warehouse as supplier");
+                                            }
+                                            // PWHM receives ONLY from Regional Warehouses (their parent)
+                                            filteredFacilities = allFacilities
+                                                .where((f) =>
+                                                    f.usage ==
+                                                        Constants
+                                                            .stateFacility &&
+                                                    f.id != currentWarehouseId)
+                                                .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "PWHM Receipt facilities: $filteredFacilities");
+                                            }
+                                          } else {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "PWHM: Dispatch/Issue/Loss/Damaged/Return operation - showing child Health Facilities");
+                                            }
+
+                                            // Debug: Check what health facilities exist
+                                            final allHealthFacilities =
+                                                allFacilities
+                                                    .where((f) =>
+                                                        f.usage ==
+                                                        Constants
+                                                            .healthFacility)
+                                                    .toList();
+                                            print(
+                                                "DEBUG: All health facilities found: ${allHealthFacilities.length}");
+                                            for (var f in allHealthFacilities) {
+                                              if (kDebugMode) {
+                                                print(
+                                                    "  - Health Facility ID: '${f.id}', Name: '${f.name}', Usage: '${f.usage}'");
+                                              }
+                                              if (kDebugMode) {
+                                                print(
+                                                    "    ID comparison: '${f.id}' == '$currentWarehouseId' ? ${f.id == currentWarehouseId}");
+                                              }
+                                              if (kDebugMode) {
+                                                print(
+                                                    "    Would be excluded: ${f.id == currentWarehouseId}");
+                                              }
+                                            }
+                                            if (kDebugMode) {
+                                              print(
+                                                  "DEBUG: Constants.healthFacility value: '${Constants.healthFacility}'");
+                                            }
+                                            if (kDebugMode) {
+                                              print(
+                                                  "DEBUG: currentWarehouseId to exclude: '$currentWarehouseId'");
+                                            }
+
+                                            // Check if any health facilities would remain after filtering
+                                            final healthFacilitiesAfterFilter =
+                                                allHealthFacilities
+                                                    .where((f) =>
+                                                        f.id !=
+                                                        currentWarehouseId)
+                                                    .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "DEBUG: Health facilities after excluding current warehouse: ${healthFacilitiesAfterFilter.length}");
+                                            }
+
+                                            if (healthFacilitiesAfterFilter
+                                                    .isEmpty &&
+                                                allHealthFacilities
+                                                    .isNotEmpty) {
+                                              if (kDebugMode) {
+                                                print(
+                                                    "WARNING: All health facilities would be excluded because they have the same ID as current warehouse!");
+
+                                                print(
+                                                    "This suggests a data issue where Prefecture Warehouse and Health Facility share the same ID.");
+                                              }
+                                            }
+
+                                            // PWHM sends/manages ONLY Health Facility Stores that are their children
+                                            filteredFacilities = allFacilities
+                                                .where((f) =>
+                                                    f.usage ==
+                                                        Constants
+                                                            .healthFacility &&
+                                                    f.id != currentWarehouseId)
+                                                .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "PWHM Non-Receipt facilities: $filteredFacilities");
+                                            }
+                                          }
+                                        }
+
+                                        // Case: Logged-in user is Health Facility Store (HFS operates at the District level.)
+                                        else if (boundaryType ==
+                                            Constants.lgaBoundaryLevel) {
+                                          if (kDebugMode) {
+                                            print(
+                                                "Health Facility Store (HFS) condition matched!");
+                                          }
+
+                                          if (entryType ==
+                                              StockRecordEntryType.receipt) {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "HFS: Receipt operation - showing parent Prefecture Warehouse as supplier");
+                                            }
+                                            // HFS receives ONLY from Prefecture Warehouses (their parent)
+                                            filteredFacilities = allFacilities
+                                                .where((f) =>
+                                                    f.usage ==
+                                                        Constants
+                                                            .prefectureFacility &&
+                                                    f.id != currentWarehouseId)
+                                                .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "HFS Receipt facilities: $filteredFacilities");
+                                            }
+                                          } else {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "HFS: Dispatch/Issue/Loss/Damaged/Return operation - using Delivery Team for Community Distributors");
+                                            }
+                                            // HFS sends to Community Distributors (CDD) via Delivery Team so we don't populate the standard facility list. The logic below will add the "Team" option.
+                                            filteredFacilities = [];
+                                            if (kDebugMode) {
+                                              print(
+                                                  "HFS Non-Receipt facilities: [] (uses Delivery Team)");
+                                            }
+                                          }
+                                        }
+
+                                        //  Case: Logged-in user is a Community Distributor (CDD)
+                                        else if (context.isDistributor) {
+                                          if (kDebugMode) {
+                                            print(
+                                                "Community Distributor (CDD) condition matched!");
+                                          }
+
+                                          if (entryType ==
+                                              StockRecordEntryType.receipt) {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "CDD: Receipt operation - showing parent Health Facility Store as supplier");
+                                            }
+                                            // CDD receives ONLY from Health Facility Stores (HFS) (their parent)
+                                            filteredFacilities = allFacilities
+                                                .where((f) =>
+                                                    f.usage ==
+                                                        Constants
+                                                            .healthFacility &&
+                                                    f.id != currentWarehouseId)
+                                                .toList();
+                                            if (kDebugMode) {
+                                              print(
+                                                  "CDD Receipt facilities: $filteredFacilities");
+                                            }
+                                          } else {
+                                            if (kDebugMode) {
+                                              print(
+                                                  "CDD: Dispatch/Issue/Loss/Damaged/Return operation - no downstream facilities");
+                                            }
+                                            // CDD is at the end of the supply chain and does not send to another facility. They distribute directly to beneficiaries/households.
+                                            filteredFacilities = [];
+                                            if (kDebugMode) {
+                                              print(
+                                                  "CDD Non-Receipt facilities: [] (end of supply chain)");
+                                            }
+                                          }
+                                        }
+
+                                        // Check if currentWarehouseId exists in filteredFacilities
+                                        final currentWarehouseInFiltered =
+                                            filteredFacilities.any((f) =>
+                                                f.id == currentWarehouseId);
+                                        if (kDebugMode) {
+                                          print(
+                                              "Current warehouse ID found in filteredFacilities: $currentWarehouseInFiltered");
+
+                                          if (currentWarehouseInFiltered) {
+                                            print(
+                                                "ERROR: Current warehouse ID '$currentWarehouseId' was NOT filtered out!");
+                                            print(
+                                                "Facility IDs in filteredFacilities:");
+                                            for (var f in filteredFacilities) {
+                                              print(
+                                                  "  - ID: '${f.id}', Name: '${f.name}', Usage: '${f.usage}'");
+                                            }
+                                          }
+                                        }
+
+                                        // Assign final facilities list - respect the filtering results
+                                        facilities = filteredFacilities;
 
                                         final teamFacilities = [
                                           FacilityModel(
