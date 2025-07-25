@@ -111,7 +111,7 @@ class CustomDeliverInterventionPageState
     );
     context.read<DeliverInterventionBloc>().add(
           DeliverInterventionSubmitEvent(
-              task: taskModel,
+              task: deliverInterventionState.oldTask ?? taskModel,
               isEditing: (deliverInterventionState.tasks ?? []).isNotEmpty &&
                       RegistrationDeliverySingleton().beneficiaryType ==
                           BeneficiaryType.household
@@ -146,7 +146,7 @@ class CustomDeliverInterventionPageState
           ),
         );
 
-    await handleSubmit(context, taskModel, deliverInterventionState);
+    await handleSubmit(context, taskModel);
   }
 
   void handleLocationState(
@@ -180,14 +180,15 @@ class CustomDeliverInterventionPageState
   Future<void> handleSubmit(
     BuildContext context,
     TaskModel taskModel,
-    DeliverInterventionState deliverState,
   ) async {
+    final deliverState = context.read<DeliverInterventionBloc>().state;
+
     // TODO: Uncomment the following lines if you want to submit the task model here only
     // Currently it's been shifted to the ZeroDose flow page
 
     context.read<DeliverInterventionBloc>().add(
           DeliverInterventionSubmitEvent(
-            task: deliverState.oldTask ?? taskModel,
+            task: taskModel,
             isEditing: (deliverState.tasks ?? []).isNotEmpty &&
                     RegistrationDeliverySingleton().beneficiaryType ==
                         BeneficiaryType.household
