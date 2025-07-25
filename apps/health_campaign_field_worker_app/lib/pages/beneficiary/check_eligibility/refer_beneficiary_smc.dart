@@ -242,7 +242,8 @@ class CustomReferBeneficiarySMCPageState
                                               reasons.join(","),
                                             ),
                                             const AdditionalField(
-                                                'referralType', 'smcReferred')
+                                                'referralType', 'smcReferred'),
+                                                ...getIndividualAdditionalFields(widget.individual)
                                           ],
                                         ),
                                       ),

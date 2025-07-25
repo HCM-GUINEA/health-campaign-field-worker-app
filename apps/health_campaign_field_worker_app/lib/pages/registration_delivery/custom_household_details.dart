@@ -572,6 +572,8 @@ class CustomHouseHoldDetailsPageState
                                     // This line tells the form to re-run all its validators
                                     field.control.parent
                                         ?.updateValueAndValidity();
+                                    form.control(_memberCountKey).value =
+                                            field.control.value ?? 0;
                                   },
                                 ),
                               );
