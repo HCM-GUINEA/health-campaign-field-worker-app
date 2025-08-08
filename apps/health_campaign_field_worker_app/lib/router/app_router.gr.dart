@@ -560,6 +560,8 @@ abstract class _$AppRouter extends RootStackRouter {
         child: CustomStockDetailsPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+          passage: args.passage,
+          jour: args.jour,
         ),
       );
     },
@@ -803,46 +805,6 @@ abstract class _$AppRouter extends RootStackRouter {
         child: UserQRDetailsPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
-        ),
-      );
-    },
-    VaccineSelectionRoute.name: (routeData) {
-      final args = routeData.argsAs<VaccineSelectionRouteArgs>();
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: VaccineSelectionPage(
-          key: args.key,
-          appLocalizations: args.appLocalizations,
-          isAdministration: args.isAdministration,
-          eligibilityAssessmentType: args.eligibilityAssessmentType,
-          isChecklistAssessmentDone: args.isChecklistAssessmentDone,
-          projectBeneficiaryClientReferenceId:
-              args.projectBeneficiaryClientReferenceId,
-          individual: args.individual,
-          task: args.task,
-          hasSideEffects: args.hasSideEffects,
-          sideEffect: args.sideEffect,
-          isZeroDoseAlreadyDone: args.isZeroDoseAlreadyDone,
-        ),
-      );
-    },
-    ZeroDoseCheckRoute.name: (routeData) {
-      final args = routeData.argsAs<ZeroDoseCheckRouteArgs>();
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: ZeroDoseCheckPage(
-          key: args.key,
-          appLocalizations: args.appLocalizations,
-          eligibilityAssessmentType: args.eligibilityAssessmentType,
-          isAdministration: args.isAdministration,
-          isEditing: args.isEditing,
-          isChecklistAssessmentDone: args.isChecklistAssessmentDone,
-          projectBeneficiaryClientReferenceId:
-              args.projectBeneficiaryClientReferenceId,
-          individual: args.individual,
-          hasSideEffects: args.hasSideEffects,
-          sideEffect: args.sideEffect,
-          task: args.task,
         ),
       );
     },
@@ -2860,12 +2822,16 @@ class CustomStockDetailsRoute
   CustomStockDetailsRoute({
     Key? key,
     InventoryLocalization? appLocalizations,
+    String? passage,
+    String? jour,
     List<PageRouteInfo>? children,
   }) : super(
           CustomStockDetailsRoute.name,
           args: CustomStockDetailsRouteArgs(
             key: key,
             appLocalizations: appLocalizations,
+            passage: passage,
+            jour: jour,
           ),
           initialChildren: children,
         );
@@ -2880,15 +2846,21 @@ class CustomStockDetailsRouteArgs {
   const CustomStockDetailsRouteArgs({
     this.key,
     this.appLocalizations,
+    this.passage,
+    this.jour,
   });
 
   final Key? key;
 
   final InventoryLocalization? appLocalizations;
 
+  final String? passage;
+
+  final String? jour;
+
   @override
   String toString() {
-    return 'CustomStockDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations}';
+    return 'CustomStockDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations, passage: $passage, jour: $jour}';
   }
 }
 
@@ -3761,173 +3733,5 @@ class UserQRDetailsRouteArgs {
   @override
   String toString() {
     return 'UserQRDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations}';
-  }
-}
-
-/// generated route for
-/// [VaccineSelectionPage]
-class VaccineSelectionRoute extends PageRouteInfo<VaccineSelectionRouteArgs> {
-  VaccineSelectionRoute({
-    Key? key,
-    AppLocalizations? appLocalizations,
-    required bool isAdministration,
-    required EligibilityAssessmentType eligibilityAssessmentType,
-    required bool isChecklistAssessmentDone,
-    String? projectBeneficiaryClientReferenceId,
-    IndividualModel? individual,
-    required TaskModel task,
-    bool? hasSideEffects = false,
-    required SideEffectModel sideEffect,
-    bool isZeroDoseAlreadyDone = false,
-    List<PageRouteInfo>? children,
-  }) : super(
-          VaccineSelectionRoute.name,
-          args: VaccineSelectionRouteArgs(
-            key: key,
-            appLocalizations: appLocalizations,
-            isAdministration: isAdministration,
-            eligibilityAssessmentType: eligibilityAssessmentType,
-            isChecklistAssessmentDone: isChecklistAssessmentDone,
-            projectBeneficiaryClientReferenceId:
-                projectBeneficiaryClientReferenceId,
-            individual: individual,
-            task: task,
-            hasSideEffects: hasSideEffects,
-            sideEffect: sideEffect,
-            isZeroDoseAlreadyDone: isZeroDoseAlreadyDone,
-          ),
-          initialChildren: children,
-        );
-
-  static const String name = 'VaccineSelectionRoute';
-
-  static const PageInfo<VaccineSelectionRouteArgs> page =
-      PageInfo<VaccineSelectionRouteArgs>(name);
-}
-
-class VaccineSelectionRouteArgs {
-  const VaccineSelectionRouteArgs({
-    this.key,
-    this.appLocalizations,
-    required this.isAdministration,
-    required this.eligibilityAssessmentType,
-    required this.isChecklistAssessmentDone,
-    this.projectBeneficiaryClientReferenceId,
-    this.individual,
-    required this.task,
-    this.hasSideEffects = false,
-    required this.sideEffect,
-    this.isZeroDoseAlreadyDone = false,
-  });
-
-  final Key? key;
-
-  final AppLocalizations? appLocalizations;
-
-  final bool isAdministration;
-
-  final EligibilityAssessmentType eligibilityAssessmentType;
-
-  final bool isChecklistAssessmentDone;
-
-  final String? projectBeneficiaryClientReferenceId;
-
-  final IndividualModel? individual;
-
-  final TaskModel task;
-
-  final bool? hasSideEffects;
-
-  final SideEffectModel sideEffect;
-
-  final bool isZeroDoseAlreadyDone;
-
-  @override
-  String toString() {
-    return 'VaccineSelectionRouteArgs{key: $key, appLocalizations: $appLocalizations, isAdministration: $isAdministration, eligibilityAssessmentType: $eligibilityAssessmentType, isChecklistAssessmentDone: $isChecklistAssessmentDone, projectBeneficiaryClientReferenceId: $projectBeneficiaryClientReferenceId, individual: $individual, task: $task, hasSideEffects: $hasSideEffects, sideEffect: $sideEffect, isZeroDoseAlreadyDone: $isZeroDoseAlreadyDone}';
-  }
-}
-
-/// generated route for
-/// [ZeroDoseCheckPage]
-class ZeroDoseCheckRoute extends PageRouteInfo<ZeroDoseCheckRouteArgs> {
-  ZeroDoseCheckRoute({
-    Key? key,
-    RegistrationDeliveryLocalization? appLocalizations,
-    required EligibilityAssessmentType eligibilityAssessmentType,
-    required bool isAdministration,
-    bool isEditing = false,
-    bool isChecklistAssessmentDone = true,
-    String? projectBeneficiaryClientReferenceId,
-    IndividualModel? individual,
-    bool? hasSideEffects = false,
-    SideEffectModel? sideEffect,
-    TaskModel? task,
-    List<PageRouteInfo>? children,
-  }) : super(
-          ZeroDoseCheckRoute.name,
-          args: ZeroDoseCheckRouteArgs(
-            key: key,
-            appLocalizations: appLocalizations,
-            eligibilityAssessmentType: eligibilityAssessmentType,
-            isAdministration: isAdministration,
-            isEditing: isEditing,
-            isChecklistAssessmentDone: isChecklistAssessmentDone,
-            projectBeneficiaryClientReferenceId:
-                projectBeneficiaryClientReferenceId,
-            individual: individual,
-            hasSideEffects: hasSideEffects,
-            sideEffect: sideEffect,
-            task: task,
-          ),
-          initialChildren: children,
-        );
-
-  static const String name = 'ZeroDoseCheckRoute';
-
-  static const PageInfo<ZeroDoseCheckRouteArgs> page =
-      PageInfo<ZeroDoseCheckRouteArgs>(name);
-}
-
-class ZeroDoseCheckRouteArgs {
-  const ZeroDoseCheckRouteArgs({
-    this.key,
-    this.appLocalizations,
-    required this.eligibilityAssessmentType,
-    required this.isAdministration,
-    this.isEditing = false,
-    this.isChecklistAssessmentDone = true,
-    this.projectBeneficiaryClientReferenceId,
-    this.individual,
-    this.hasSideEffects = false,
-    this.sideEffect,
-    this.task,
-  });
-
-  final Key? key;
-
-  final RegistrationDeliveryLocalization? appLocalizations;
-
-  final EligibilityAssessmentType eligibilityAssessmentType;
-
-  final bool isAdministration;
-
-  final bool isEditing;
-
-  final bool isChecklistAssessmentDone;
-
-  final String? projectBeneficiaryClientReferenceId;
-
-  final IndividualModel? individual;
-
-  final bool? hasSideEffects;
-
-  final SideEffectModel? sideEffect;
-
-  final TaskModel? task;
-
-  @override
-  String toString() {
-    return 'ZeroDoseCheckRouteArgs{key: $key, appLocalizations: $appLocalizations, eligibilityAssessmentType: $eligibilityAssessmentType, isAdministration: $isAdministration, isEditing: $isEditing, isChecklistAssessmentDone: $isChecklistAssessmentDone, projectBeneficiaryClientReferenceId: $projectBeneficiaryClientReferenceId, individual: $individual, hasSideEffects: $hasSideEffects, sideEffect: $sideEffect, task: $task}';
   }
 }

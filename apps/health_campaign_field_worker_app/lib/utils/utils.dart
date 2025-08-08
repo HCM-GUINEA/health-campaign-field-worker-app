@@ -1,5 +1,7 @@
 library app_utils;
 
+import 'package:digit_data_model/data_model.dart';
+import 'package:intl/intl.dart';
 import 'package:inventory_management/inventory_management.dart';
 import 'package:referral_reconciliation/referral_reconciliation.dart'
     as referral_reconciliation_mappers;
@@ -55,6 +57,7 @@ import '../data/local_store/app_shared_preferences.dart';
 import '../data/local_store/no_sql/schema/localization.dart';
 import '../data/local_store/secure_store/secure_store.dart';
 import '../models/app_config/app_config_model.dart';
+import '../models/entities/identifier_types.dart';
 import '../models/entities/roles_type.dart';
 import '../router/app_router.dart';
 import '../widgets/progress_indicator/progress_indicator.dart';
@@ -93,6 +96,23 @@ class CustomValidator {
     return {'mobileNumber': true}; // Invalid
   }
 
+  static Map<String, dynamic>? validMobileNumberNineDigits(
+    AbstractControl<dynamic> control,
+  ) {
+    if (control.value == null || control.value.toString().isEmpty) {
+      return null;
+    }
+
+    const pattern = r'^\d{9}$'; // Exactly 9 digits
+
+    if (RegExp(pattern).hasMatch(control.value.toString())) {
+      return null; // Valid
+    }
+
+    return {'mobileNumber': true}; // Invalid
+  }
+  
+
   static Map<String, dynamic>? startsWith7or9(
       AbstractControl<dynamic> control) {
     if (control.value == null || control.value.toString().isEmpty) {
@@ -107,6 +127,22 @@ class CustomValidator {
     }
 
     return {'startsWith7or9': true}; // Invalid
+  }
+
+  static Map<String, dynamic>? startsWith6(
+      AbstractControl<dynamic> control) {
+    if (control.value == null || control.value.toString().isEmpty) {
+      return null;
+    }
+
+    final value = control.value.toString();
+    const pattern = r'^6'; // Starts with 6
+
+    if (RegExp(pattern).hasMatch(value)) {
+      return null; // Valid
+    }
+
+    return {'startsWith6': true}; // Invalid
   }
 
   static Map<String, dynamic>? onlyAlphabets(AbstractControl<dynamic> control) {
@@ -797,6 +833,48 @@ bool isHFUser(BuildContext context) {
   } catch (_) {
     return false;
   }
+}
+
+int getIndividualAge(IndividualModel individualModel) {
+  DateTime dateOfBirth =
+      DateFormat("dd/MM/yyyy").parse(individualModel.dateOfBirth ?? '');
+  DigitDOBAge age = DigitDateUtils.calculateAge(dateOfBirth);
+  return getAgeMonths(age);
+}
+
+String? getBeneficiaryId(IndividualModel individualModel) {
+  IdentifierTypes.uniqueBeneficiaryID.toValue();
+  return individualModel.identifiers
+          ?.firstWhereOrNull((e) =>
+              e.identifierType == IdentifierTypes.uniqueBeneficiaryID.toValue())
+          ?.identifierId ??
+      '';
+}
+
+List<AdditionalField> getIndividualAdditionalFields(
+    IndividualModel? individualModel) {
+  return [
+    if (individualModel != null)
+      AdditionalField(
+        AdditionalFieldsType.age.toValue(),
+        getIndividualAge(individualModel),
+      ),
+    if (individualModel?.gender != null)
+      AdditionalField(
+        AdditionalFieldsType.gender.toValue(),
+        individualModel?.gender,
+      ),
+    if (individualModel?.clientReferenceId != null)
+      AdditionalField(
+        'individualClientReferenceId',
+        individualModel?.clientReferenceId,
+      ),
+    if (individualModel != null && getBeneficiaryId(individualModel) != null)
+      AdditionalField(
+        'uniqueBeneficiaryId',
+        getBeneficiaryId(individualModel),
+      ),
+  ];
 }
 
 initializeAllMappers() async {

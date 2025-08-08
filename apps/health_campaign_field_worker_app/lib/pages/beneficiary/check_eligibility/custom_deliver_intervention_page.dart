@@ -65,6 +65,8 @@ class CustomDeliverInterventionPageState
   static const _quantityDistributedKey = 'quantityDistributed';
   static const _doseAdministrationKey = 'doseAdministered';
   static const _dateOfAdministrationKey = 'dateOfAdministration';
+  // New form key for the delivery day dropdown
+  static const _deliveryDayKey = 'deliveryDay';
   final clickedStatus = ValueNotifier<bool>(false);
   bool? shouldSubmit = false;
 
@@ -109,7 +111,7 @@ class CustomDeliverInterventionPageState
     );
     context.read<DeliverInterventionBloc>().add(
           DeliverInterventionSubmitEvent(
-              task: taskModel,
+              task: deliverInterventionState.oldTask ?? taskModel,
               isEditing: (deliverInterventionState.tasks ?? []).isNotEmpty &&
                       RegistrationDeliverySingleton().beneficiaryType ==
                           BeneficiaryType.household
@@ -144,7 +146,7 @@ class CustomDeliverInterventionPageState
           ),
         );
 
-    await handleSubmit(context, taskModel, deliverInterventionState);
+    await handleSubmit(context, taskModel);
   }
 
   void handleLocationState(
@@ -178,64 +180,65 @@ class CustomDeliverInterventionPageState
   Future<void> handleSubmit(
     BuildContext context,
     TaskModel taskModel,
-    DeliverInterventionState deliverState,
   ) async {
+    final deliverState = context.read<DeliverInterventionBloc>().state;
+
     // TODO: Uncomment the following lines if you want to submit the task model here only
     // Currently it's been shifted to the ZeroDose flow page
 
-    // context.read<DeliverInterventionBloc>().add(
-    //       DeliverInterventionSubmitEvent(
-    //         task: deliverState.oldTask ?? taskModel,
-    //         isEditing: (deliverState.tasks ?? []).isNotEmpty &&
-    //                 RegistrationDeliverySingleton().beneficiaryType ==
-    //                     BeneficiaryType.household
-    //             ? true
-    //             : false,
-    //         boundaryModel: RegistrationDeliverySingleton().boundary!,
-    //       ),
-    //     );
+    context.read<DeliverInterventionBloc>().add(
+          DeliverInterventionSubmitEvent(
+            task: taskModel,
+            isEditing: (deliverState.tasks ?? []).isNotEmpty &&
+                    RegistrationDeliverySingleton().beneficiaryType ==
+                        BeneficiaryType.household
+                ? true
+                : false,
+            boundaryModel: RegistrationDeliverySingleton().boundary!,
+          ),
+        );
 
-    // ProjectTypeModel? projectTypeModel =
-    //     widget.eligibilityAssessmentType == EligibilityAssessmentType.smc
-    //         ? RegistrationDeliverySingleton()
-    //             .selectedProject
-    //             ?.additionalDetails
-    //             ?.projectType
-    //         : RegistrationDeliverySingleton()
-    //             .selectedProject
-    //             ?.additionalDetails
-    //             ?.additionalProjectType;
+    ProjectTypeModel? projectTypeModel =
+        widget.eligibilityAssessmentType == EligibilityAssessmentType.smc
+            ? RegistrationDeliverySingleton()
+                .selectedProject
+                ?.additionalDetails
+                ?.projectType
+            : RegistrationDeliverySingleton()
+                .selectedProject
+                ?.additionalDetails
+                ?.additionalProjectType;
 
-    // if (deliverState.futureDeliveries != null &&
-    //     deliverState.futureDeliveries!.isNotEmpty &&
-    //     projectTypeModel?.cycles?.isNotEmpty == true) {
-    //   context.router.popUntilRouteWithName(BeneficiaryWrapperRoute.name);
-    //   context.router.push(
-    //     CustomSplashAcknowledgementRoute(
-    //         enableBackToSearch: false,
-    //         eligibilityAssessmentType: widget.eligibilityAssessmentType),
-    //   );
-    // } else {
-    //   final reloadState = context.read<HouseholdOverviewBloc>();
+    if (deliverState.futureDeliveries != null &&
+        deliverState.futureDeliveries!.isNotEmpty &&
+        projectTypeModel?.cycles?.isNotEmpty == true) {
+      context.router.popUntilRouteWithName(BeneficiaryWrapperRoute.name);
+      context.router.push(
+        CustomSplashAcknowledgementRoute(
+            enableBackToSearch: false,
+            eligibilityAssessmentType: widget.eligibilityAssessmentType),
+      );
+    } else {
+      final reloadState = context.read<HouseholdOverviewBloc>();
 
-    //   reloadState.add(
-    //     HouseholdOverviewReloadEvent(
-    //       projectId: RegistrationDeliverySingleton().projectId!,
-    //       projectBeneficiaryType:
-    //           RegistrationDeliverySingleton().beneficiaryType!,
-    //     ),
-    //   );
-    //   context.router.popAndPush(
-    //     CustomHouseholdAcknowledgementRoute(
-    //       enableViewHousehold: true,
-    //       eligibilityAssessmentType: widget.eligibilityAssessmentType,
-    //     ),
-    //   );
-    // }
-    context.router.popAndPush(CustomDeliverySummaryRoute(
-      eligibilityAssessmentType: widget.eligibilityAssessmentType,
-      task: taskModel,
-    ));
+      reloadState.add(
+        HouseholdOverviewReloadEvent(
+          projectId: RegistrationDeliverySingleton().projectId!,
+          projectBeneficiaryType:
+              RegistrationDeliverySingleton().beneficiaryType!,
+        ),
+      );
+      context.router.popAndPush(
+        CustomHouseholdAcknowledgementRoute(
+          enableViewHousehold: true,
+          eligibilityAssessmentType: widget.eligibilityAssessmentType,
+        ),
+      );
+    }
+    // context.router.popAndPush(CustomDeliverySummaryRoute(
+    //   eligibilityAssessmentType: widget.eligibilityAssessmentType,
+    //   task: taskModel,
+    // ));
   }
 
   @override
@@ -251,6 +254,16 @@ class CustomDeliverInterventionPageState
         );
       });
     }
+    // List of options for the new dropdown
+
+    final deliveryDayOptions = [
+      'Jour 1',
+      'Jour 2',
+      'Jour 3',
+      'Jour 4',
+      'Jour 5',
+      'Rattrapage'
+    ];
 
     return ProductVariantBlocWrapper(
       child: BlocBuilder<HouseholdOverviewBloc, HouseholdOverviewState>(
@@ -395,6 +408,10 @@ class CustomDeliverInterventionPageState
                                                           MainAxisSize.max,
                                                       isDisabled: isClicked,
                                                       onPressed: () async {
+                                                        form.markAllAsTouched();
+
+                                                        if (!form.valid) return;
+
                                                         final deliveredProducts =
                                                             ((form.control(_resourceDeliveredKey)
                                                                         as FormArray)
@@ -584,6 +601,60 @@ class CustomDeliverInterventionPageState
                                                       ),
                                                     ),
                                                   ),
+                                                // ** START: Corrected "Jour de Passage" Field **
+                                                ReactiveWrapperField(
+                                                  formControlName:
+                                                      _deliveryDayKey,
+                                                  validationMessages: {
+                                                    'required': (_) =>
+                                                        localizations.translate(i18
+                                                            .common
+                                                            .corecommonRequired),
+                                                  },
+                                                  builder: (field) {
+                                                    // Get the current value from the form control to build the DropdownItem
+                                                    final String? currentValue =
+                                                        form
+                                                            .control(
+                                                                _deliveryDayKey)
+                                                            .value;
+
+                                                    return LabeledField(
+                                                      label:
+                                                          '${localizations.translate(i18_local.deliverIntervention.jourDePassageLabel)} *',
+                                                      child: DigitDropdown(
+                                                        // Correct parameter: 'selectedOption' which takes a DropdownItem
+                                                        selectedOption: currentValue ==
+                                                                null
+                                                            ? null
+                                                            : DropdownItem(
+                                                                name:
+                                                                    currentValue,
+                                                                code:
+                                                                    currentValue),
+
+                                                        // Correct parameter: 'onSelect' for the callback
+                                                        onSelect: (value) {
+                                                          // Use didChange to update the reactive form state
+                                                          field.didChange(
+                                                              value.code);
+                                                        },
+
+                                                        // Correct parameter: 'items' for the list of choices
+                                                        items: deliveryDayOptions
+                                                            .map((e) =>
+                                                                DropdownItem(
+                                                                    name: e,
+                                                                    code: e))
+                                                            .toList(),
+
+                                                        errorMessage:
+                                                            field.errorText,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+// ** END: Corrected "Jour de Passage" Field **
                                                 if (widget.eligibilityAssessmentType ==
                                                         EligibilityAssessmentType
                                                             .smc &&
@@ -878,6 +949,15 @@ class CustomDeliverInterventionPageState
             AdditionalFieldsType.doseIndex.toValue(),
             "0${dose ?? 1}",
           ),
+          // ** START: Save the value of the new dropdown **
+
+          AdditionalField(
+            'jourDePassage', // The key for the new field
+
+            form.control(_deliveryDayKey).value,
+          ),
+
+          // ** END: Save the value of the new dropdown **
           AdditionalField(
             AdditionalFieldsType.deliveryStrategy.toValue(),
             deliveryStrategy,
@@ -985,6 +1065,14 @@ class CustomDeliverInterventionPageState
                 .toString(),
         validators: [],
       ),
+      // ** START: Add the new dropdown to the form group **
+
+      _deliveryDayKey: FormControl<String>(
+        value: null,
+        validators: [Validators.required],
+      ),
+
+      // ** END: Add the new dropdown to the form group **
       _dateOfAdministrationKey:
           FormControl<DateTime>(value: DateTime.now(), validators: []),
       _resourceDeliveredKey: FormArray<ProductVariantModel>(

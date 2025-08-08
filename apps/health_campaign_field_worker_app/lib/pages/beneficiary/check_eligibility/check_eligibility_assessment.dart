@@ -408,9 +408,12 @@ class _EligibilityChecklistViewPage
                                                     version: 1,
                                                     fields: [
                                                       AdditionalField(
+                                                          'lng', longitude),
+                                                      AdditionalField(
+                                                          'lat', latitude),
+                                                      AdditionalField(
                                                           'boundaryCode',
-                                                          context
-                                                              .boundary.code),
+                                                          context.boundary.code)
                                                     ],
                                                   )),
                                             ),
@@ -447,7 +450,6 @@ class _EligibilityChecklistViewPage
                                         ifReferral)) {
                                   final router = context.router;
                                   if (ifIneligible) {
-                                    // added the deliversubmitevent here
                                     final clientReferenceId =
                                         IdGen.i.identifier;
                                     final task = TaskModel(
@@ -505,6 +507,9 @@ class _EligibilityChecklistViewPage
                                                 : EligibilityAssessmentStatus
                                                     .vasDone.name,
                                           ),
+                                          ...getIndividualAdditionalFields(
+                                            widget.individual,
+                                          ),
                                         ],
                                       ),
                                       address: widget.individual!.address?.first
@@ -515,35 +520,37 @@ class _EligibilityChecklistViewPage
                                       ),
                                     );
 
-                                    // TODO: Currently, it's been shifted to the zero dose flow
-                                    // context.read<DeliverInterventionBloc>().add(
-                                    //       DeliverInterventionSubmitEvent(
-                                    //           task: task,
-                                    //           isEditing: false,
-                                    //           boundaryModel: context.boundary,
-                                    //           navigateToSummary: false,
-                                    //           householdMemberWrapper:
-                                    //               householdOverviewState
-                                    //                   .householdMemberWrapper),
-                                    //     );
-                                    // final searchBloc =
-                                    //     context.read<SearchHouseholdsBloc>();
-                                    // searchBloc.add(
-                                    //   const SearchHouseholdsClearEvent(),
-                                    // );
+                                    context.read<DeliverInterventionBloc>().add(
+                                          DeliverInterventionSubmitEvent(
+                                              task: task,
+                                              isEditing: false,
+                                              boundaryModel: context.boundary,
+                                              navigateToSummary: false,
+                                              householdMemberWrapper:
+                                                  householdOverviewState
+                                                      .householdMemberWrapper),
+                                        );
+                                    final searchBloc =
+                                        context.read<SearchHouseholdsBloc>();
+                                    searchBloc.add(
+                                      const SearchHouseholdsClearEvent(),
+                                    );
 
-                                    router.push(ZeroDoseCheckRoute(
-                                      eligibilityAssessmentType:
-                                          widget.eligibilityAssessmentType,
-                                      isAdministration: false,
-                                      task: task,
-                                    ));
-                                    // router.push(
-                                    //   CustomHouseholdAcknowledgementRoute(
-                                    //       enableViewHousehold: true,
-                                    //       eligibilityAssessmentType:
-                                    //           widget.eligibilityAssessmentType),
-                                    // );
+                                    // router.push(ZeroDoseCheckRoute(
+                                    //   eligibilityAssessmentType:
+                                    //       widget.eligibilityAssessmentType,
+                                    //   isAdministration: false,
+                                    //   task: task,
+                                    //   projectBeneficiaryClientReferenceId: task
+                                    //           .projectBeneficiaryClientReferenceId ??
+                                    //       projectBeneficiaryClientReferenceId,
+                                    // ));
+                                    router.push(
+                                      CustomHouseholdAcknowledgementRoute(
+                                          enableViewHousehold: true,
+                                          eligibilityAssessmentType:
+                                              widget.eligibilityAssessmentType),
+                                    );
                                   } else if (ifReferral) {
                                     if (widget.eligibilityAssessmentType ==
                                         EligibilityAssessmentType.smc) {
@@ -1069,12 +1076,12 @@ class _EligibilityChecklistViewPage
       if (responses.containsKey(q2Key) &&
           responses[q2Key]!.isNotEmpty &&
           responses[q2Key] == yes) {
-            if (!isIneligible &&
-          (responses.containsKey(q6Key) && responses[q6Key]!.isNotEmpty)) {
-        ifAdministration = responses[q6Key] == yes ? false : true;
-        isIneligible = responses[q6Key] == yes ? true : false;
+        if (!isIneligible &&
+            (responses.containsKey(q6Key) && responses[q6Key]!.isNotEmpty)) {
+          ifAdministration = responses[q6Key] == yes ? false : true;
+          isIneligible = responses[q6Key] == yes ? true : false;
+        }
       }
-          }
       if (isIneligible) {
         for (var entry in responses.entries) {
           if (entry.key == q3Key || entry.key == q5Key) {
@@ -1300,3 +1307,5 @@ class _EligibilityChecklistViewPage
     return false;
   }
 }
+
+

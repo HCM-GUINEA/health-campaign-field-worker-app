@@ -105,9 +105,12 @@ class Constants {
   static const String stateFacility = 'Regional Facility';
   static const String lgaFacility = 'District Facility';
   static const String countryBoundaryLevel = 'Country';
+  static const String prefectureFacility = 'Prefecture Facility';
+  static const String prefectureBoundaryLevel = 'Prefecture';
   static const int mlPerBottle = 30;
   static const int apiCallLimit = 1000;
   static const String pipeSeparator = '||';
+  static const int mobileNumberLength = 9;
 
   // for stock validation
 
@@ -124,11 +127,13 @@ class Constants {
   // for reportSummary
 
   static const String registered = "registered";
+  static const String registeredHH = "registeredHH";
   static const String administered = "administered";
   static const String refusals = "refusals";
   static const String tablet_3_11 = "tablet_3_11";
   static const String tablet_12_59 = "tablet_12_59";
-  static const String zeroDose = 'zeroDose';
+  static const String remaining_tablet_3_11 = "remaining_tablet_3_11";
+  static const String remaining_tablet_12_59 = "remaining_tablet_12_59";
 
   // todo enable before cycle2
   static const bool isDownSyncEnabled = false;

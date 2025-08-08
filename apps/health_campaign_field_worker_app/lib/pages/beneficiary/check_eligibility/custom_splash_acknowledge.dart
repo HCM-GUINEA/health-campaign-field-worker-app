@@ -51,21 +51,22 @@ class CustomSplashAcknowledgementPageState
           }
         }
       });
-    } else if (widget.enableRouteToZeroDose == true) {
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          try {
-            context.router.push(ZeroDoseCheckRoute(
-              eligibilityAssessmentType: widget.eligibilityAssessmentType,
-              isAdministration: false,
-              task: widget.task,
-            ));
-          } catch (e) {
-            rethrow;
-          }
-        }
-      });
     }
+    // else if (widget.enableRouteToZeroDose == true) {
+    //   Future.delayed(const Duration(seconds: 1), () {
+    //     if (mounted) {
+    //       try {
+    //         context.router.push(ZeroDoseCheckRoute(
+    //           eligibilityAssessmentType: widget.eligibilityAssessmentType,
+    //           isAdministration: false,
+    //           task: widget.task,
+    //         ));
+    //       } catch (e) {
+    //         rethrow;
+    //       }
+    //     }
+    //   });
+    // }
   }
 
   @override

@@ -12,6 +12,7 @@ import 'package:registration_delivery/blocs/household_overview/household_overvie
 import 'package:registration_delivery/blocs/side_effects/side_effects.dart';
 import 'package:registration_delivery/models/entities/side_effect.dart';
 import 'package:registration_delivery/models/entities/task.dart';
+import 'package:registration_delivery/router/registration_delivery_router.gm.dart';
 import 'package:registration_delivery/utils/extensions/extensions.dart';
 import 'package:registration_delivery/utils/utils.dart';
 import 'package:registration_delivery/widgets/component_wrapper/product_variant_bloc_wrapper.dart';
@@ -198,15 +199,15 @@ class CustomSideEffectsPageState extends LocalizedState<CustomSideEffectsPage> {
                                                         ),
                                                       );
                                                       // TODO: Currently, it's been shifted to the zero dose flow
-                                                      // context
-                                                      //     .read<
-                                                      //         SideEffectsBloc>()
-                                                      //     .add(
-                                                      //       SideEffectsSubmitEvent(
-                                                      //         sideEffect!,
-                                                      //         false,
-                                                      //       ),
-                                                      //     );
+                                                      context
+                                                          .read<
+                                                              SideEffectsBloc>()
+                                                          .add(
+                                                            SideEffectsSubmitEvent(
+                                                              sideEffect!,
+                                                              false,
+                                                            ),
+                                                          );
                                                       Navigator.of(
                                                         context,
                                                         rootNavigator: true,
@@ -236,7 +237,34 @@ class CustomSideEffectsPageState extends LocalizedState<CustomSideEffectsPage> {
                                             );
 
                                             if (shouldSubmit ?? false) {
-                                              submitSideEffects(sideEffect!);
+                                              final reloadState = context.read<
+                                                  HouseholdOverviewBloc>();
+
+                                              Future.delayed(
+                                                const Duration(
+                                                    milliseconds: 500),
+                                                () {
+                                                  reloadState.add(
+                                                    HouseholdOverviewReloadEvent(
+                                                      projectId:
+                                                          RegistrationDeliverySingleton()
+                                                              .projectId!,
+                                                      projectBeneficiaryType:
+                                                          RegistrationDeliverySingleton()
+                                                              .beneficiaryType!,
+                                                    ),
+                                                  );
+                                                },
+                                              ).then(
+                                                (value) => context.router.push(
+                                                  CustomHouseholdAcknowledgementRoute(
+                                                    enableViewHousehold: true,
+                                                    eligibilityAssessmentType:
+                                                        EligibilityAssessmentType
+                                                            .smc,
+                                                  ),
+                                                ),
+                                              );
                                             }
                                           } else {
                                             setState(() {
@@ -353,34 +381,6 @@ class CustomSideEffectsPageState extends LocalizedState<CustomSideEffectsPage> {
             },
           );
         },
-      ),
-    );
-  }
-
-  void submitSideEffects(SideEffectModel sideEffect) async {
-    final reloadState = context.read<HouseholdOverviewBloc>();
-
-    Future.delayed(
-      const Duration(milliseconds: 500),
-      () {
-        reloadState.add(
-          HouseholdOverviewReloadEvent(
-            projectId: RegistrationDeliverySingleton().projectId!,
-            projectBeneficiaryType:
-                RegistrationDeliverySingleton().beneficiaryType!,
-          ),
-        );
-      },
-    ).then(
-      (value) => context.router.push(
-        ZeroDoseCheckRoute(
-            projectBeneficiaryClientReferenceId:
-                widget.tasks.last.projectBeneficiaryClientReferenceId,
-            eligibilityAssessmentType: EligibilityAssessmentType.smc,
-            isAdministration: false,
-            isChecklistAssessmentDone: false,
-            hasSideEffects: true,
-            sideEffect: sideEffect),
       ),
     );
   }

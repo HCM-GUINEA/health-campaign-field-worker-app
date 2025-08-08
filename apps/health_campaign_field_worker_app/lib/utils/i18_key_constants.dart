@@ -169,9 +169,6 @@ class HouseholdOverView {
   String get householdOverViewSMCAssessmentActionText =>
       'HOUSEHOLD_OVER_VIEW_SMC_ASSESSMENT_ACTION_TEXT';
 
-  String get householdOverViewZeroDoseActionText =>
-      'HOUSEHOLD_OVER_VIEW_ZERO_DOSE_ACTION_TEXT';
-
   String get householdOverViewVASAssessmentActionText =>
       'HOUSEHOLD_OVER_VIEW_VAS_ASSESSMENT_ACTION_TEXT';
 
@@ -191,13 +188,6 @@ class HouseholdOverView {
       'HOUSEHOLD_OVER_VIEW_BENEFICIARY_INELIGIBLE_SMC_LABEL';
   String get householdOverViewBeneficiaryInEligibleVASLabel =>
       'HOUSEHOLD_OVER_VIEW_BENEFICIARY_INELIGIBLE_VAS_LABEL';
-
-  String get householdOverViewZeroDoseIconLabel =>
-      'HOUSEHOLD_OVER_VIEW_ZERO_DOSE_ICON_LABEL';
-  String get householdOverViewIncompletementVaccineLabel =>
-      'HOUSEHOLD_OVER_VIEW_INCOMPLETEMENT_VACCINE_LABEL';
-  String get householdOverViewZeroDoseDeliveredIconLabel =>
-      'HOUSEHOLD_OVER_VIEW_ZERO_DOSE_DELIVERED_ICON_LABEL';
 }
 
 class DeliverIntervention {
@@ -255,8 +245,7 @@ class DeliverIntervention {
   String get doseadministeredby => 'DOSE_ADMINISTERED_BY_LABEL';
   String get proceedToVASLabel => 'PROCEED_TO_VAS_LABEL';
   String get proceedToVASDescription => 'PROCEED_TO_VAS_DESCRIPTION';
-
-  String get zeroDoseCheckLabel => 'DELIVER_INTERVENTION_ZERO_DOSE_CHECK_LABEL';
+  String get jourDePassageLabel => 'JOUR_DE_PASSAGE_LABEL';
 }
 
 class Checklist {
@@ -309,6 +298,7 @@ class Checklist {
 class ReferBeneficiary {
   const ReferBeneficiary();
 
+  String get maxAgeOfReferralBeneficiary => 'MAX_AGE_OF_REFERRAL_BENEFICIARY_NEW';
   String get dateOfReferralLabel => 'REFER_BENEFICIARY_DATE_OF_REFERRAL_LABEL';
   String get dateOfEvaluationLabel =>
       'REFER_BENEFICIARY_DATE_OF_EVALUATION_LABEL';
@@ -353,6 +343,9 @@ class HouseholdDetails {
 
   String get previousBeneficiaryQRCode => "PREVIOUS_BENEFICIARY_QR_CODE_LABEL";
 
+  String get mobileNumberRequiredValidationMessage =>
+      'MOBILE_NUMBER_REQUIRED_VALIDATION_MESSAGE';
+
   String get yesLabelText => 'YES_LABEL_TEXT';
 
   String get noLabelText => 'NO_LABEL_TEXT';
@@ -392,6 +385,15 @@ class HouseholdDetails {
   String get submitNo => 'SUBMIT_NO';
   String get householdConsentLabel => 'HOUSEHOLD_CONSENT_LABEL';
   String get cardAztTitle => 'HOUSEHOLD_CONSENT_LABELL';
+  String get previousBeneficiaryIdLabel => 'PREVIOUS_BENEFICIARY_ID_LABEL';
+  String get numberOfChildren0To59MonthsLabel =>
+      'NUMBER_OF_CHILDREN_0_TO_59_MONTHS_LABEL';
+  String get numberOfChildren0To11MonthsLabel =>
+      'NUMBER_OF_CHILDREN_0_TO_11_MONTHS_LABEL';
+  String get numberOfChildren12To59MonthsLabel =>
+      'NUMBER_OF_CHILDREN_12_TO_59_MONTHS_LABEL';
+  String get totalChildrenCountMismatchError =>
+      'TOTAL_CHILDREN_COUNT_MISMATCH_ERROR';
 }
 
 class ForgotPassword {
@@ -409,8 +411,23 @@ class ForgotPassword {
 class HomeShowcase {
   const HomeShowcase();
 
+  String get registeredHouseholds {
+    return 'HOME_SHOWCASE_REGISTERED_HOUSEHOLDS';
+  }
+
+  String get daySixPrefix{
+    return 'HOME_SHOWCASE_DAY_6_PREFIX';
+  }
   String get summaryReport {
     return 'HOME_SHOWCASE_SUMMARY_REPORT_LABLE';
+  }
+
+  String get tablets_3_11MonthsRemaining {
+    return 'HOME_SHOWCASE_TABLET_3_11_MONTHS_REMAINING';
+  }
+  
+  String get tablets_12_59MonthsRemaining{
+    return 'HOME_SHOWCASE_TABLET_12_59_MONTHS_REMAINING';
   }
 
   String get summaryReportDate {
@@ -427,10 +444,6 @@ class HomeShowcase {
 
   String get summaryReportRefusalsCases {
     return 'HOME_SHOWCASE_SUMMARY_REPORT_REFUALS_CASES';
-  }
-
-  String get summaryReportZeroDoseChildren {
-    return 'HOME_SHOWCASE_SUMMARY_REPORT_ZERO_DOSE_CHILDREN';
   }
 
   String get summaryReportSPAQ1 {
@@ -516,6 +529,20 @@ class HomeShowcase {
 
 class StockDetails {
   const StockDetails();
+
+  String get passageValueLabel => 'STOCK_DETAILS_PASSAGE_VALUE_LABEL';
+  String get passageValueOne => 'STOCK_DETAILS_PASSAGE_VALUE_ONE';
+  String get passageValueTwo => 'STOCK_DETAILS_PASSAGE_VALUE_TWO';
+  String get passageValueThree => 'STOCK_DETAILS_PASSAGE_VALUE_THREE';
+  String get passageValueFour => 'STOCK_DETAILS_PASSAGE_VALUE_FOUR';
+  String get passageValueFive => 'STOCK_DETAILS_PASSAGE_VALUE_FIVE';
+
+  String get jourValueLabel => 'STOCK_DETAILS_JOUR_VALUE_LABEL';
+  String get jourValueOne => 'STOCK_DETAILS_JOUR_VALUE_ONE';
+  String get jourValueTwo => 'STOCK_DETAILS_JOUR_VALUE_TWO';
+  String get jourValueThree => 'STOCK_DETAILS_JOUR_VALUE_THREE';
+  String get jourValueFour => 'STOCK_DETAILS_JOUR_VALUE_FOUR';
+  String get jourValueFive => 'STOCK_DETAILS_JOUR_VALUE_FIVE';
 
   String get selectTransactingPartyReturnedFrom =>
       'STOCK_DETAILS_RETURNED_FROM';
@@ -1022,10 +1049,15 @@ class AcknowledgementSuccess {
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_DISPATCH";
   String get acknowledgementDescriptionTextLoss =>
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_LOSS";
+  String get acknowledgementDescriptionTextLossUpdated =>
+  "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_LOSS_UPDATED";
   String get acknowledgementDescriptionTextDamaged =>
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_DAMAGED";
   String get acknowledgementDescriptionTextReceipt =>
       "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_RECEIPT";
+
+  String get acknowledgementDescriptionTextReceiptUpdated =>
+      "UPDATED_ACKNOWLEDGEMENT_DESCRIPTION_TEXT_RECEIPT_UPDATED";
 
   String get mrrnNumberDescription => "MRRN_NUMBER_DESCRIPTION";
 
@@ -1363,6 +1395,10 @@ class SearchBeneficiary {
 
   String get beneficiarySearchHintText => 'BENEFICIARY_SEARCH_HINT_TEXT';
 
+  String get beneficiaryIdSearchHintText => "BENEFICIARY_ID_SEARCH_HINT_TEXT";
+  String get beneficiaryMobileSearchHintText =>
+      "BENEFICIARY_MOBILE_SEARCH_HINT_TEXT";
+
   String get beneficiaryIndividualSearchHintText =>
       'BENEFICIARY_INDIVIDUAL_SEARCH_HINT_TEXT';
 
@@ -1381,6 +1417,10 @@ class SearchBeneficiary {
   String get proximityLabel => 'PROXIMITY_LABEL';
   String get beneficiaryIdValidInfoDescription =>
       'BENEFICIARY_ID_VALID_INFO_DESCRIPTION';
+
+  String get mobileNumberValidInfoDescription =>
+      'MOBILE_NUMBER_VALID_INFO_DESCRIPTION';
+  String get mobileNumberInfoTitle => 'MOBILE_NUMBER_VALID_INFO_TITLE';
 }
 
 class IndividualDetails {
@@ -1388,6 +1428,12 @@ class IndividualDetails {
 
   String get individualDetailsLabelTextUpdate =>
       'INDIVIDUAL_DETAILS_LABEL_TEXT_UPDATE';
+
+  String get mobileNumberStartWith6ValidationMessageUpdated =>
+      'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_6_UPDATED';
+  String get mobileNumberStartWith6ValidationMessageNewUpdated =>
+      'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_6_NEW_UPDATED';
+
   String get individualDetailsNameLabelTextUpdate =>
       'INDIVIDUAL_DETAILS_NAME_LABEL_TEXT_UPDATE';
   String get individualsDetailsLabelTextNewUpdate =>
@@ -1403,6 +1449,9 @@ class IndividualDetails {
       'INDIVIDUAL_DETAILS_ONLY_ALPHABETS_NUMBERS_SPACES_VALIDATION_MESSAGE';
 
   String get headAgeValidError => "HEAD_AGE_VALID_ERROR";
+
+  String get caregiverDetailsLabelTextUpdate =>
+      'CAREGIVER_DETAILS_LABEL_TEXT_UPDATE';
 
   String get individualsDetailsLabelText => 'INDIVIDUAL_LABEL_TEXT';
 
@@ -1448,6 +1497,9 @@ class IndividualDetails {
   String get mobileNumberLengthValidationMessage =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_LENGTH';
 
+  String get mobileNumberLengthValidationMessageUpdated =>
+      'INDIVIDUAL_DETAILS_MOBILE_NUMBER_LENGTH_UPDATED';
+
   String get mobileNumberStartWith7or9ValidationMessage =>
       'INDIVIDUAL_DETAILS_MOBILE_NUMBER_START_WITH_7_OR_9';
 
@@ -1470,15 +1522,28 @@ class IndividualDetails {
   String get relocatedBeneficiaryQuestion => 'RELOCATED_BENEFICIARY_QUESTION';
 
   String get monthsExceedErrorText => 'MONTHS_EXCEED_ERROR_TEXT';
+
+  String get childResidentQuestion => 'CHILD_RESIDENT_QUESTION';
 }
 
 class BeneficiaryDetails {
   const BeneficiaryDetails();
 
+
+  String get validationForExcessStockIssue =>
+      "ERROR_VALIDATION_FOR_EXCESS_STOCK_ISSUED_UPDATED";
+
+   String get validationForExcessStockLoss =>
+      "ERROR_VALIDATION_FOR_EXCESS_STOCK_LOSS_UPDATED";
+
+  String get validationForExcessStockDamaged =>
+      "ERROR_VALIDATION_FOR_EXCESS_STOCK_DAMAGED_UPDATED";
+
   String get validationForExcessStockDispatch =>
       "ERROR_VALIDATION_FOR_EXCESS_STOCK_DISPATCH";
   String get searchbybeneficiaryidtextupdate =>
       'SEARCH_BY_BENEFICIARY_ID_TEXT_UPDATE';
+  String get searchByMobileNumber => 'SEARCH_BY_MOBILE_NUMBER';
   String get validationForExcessStockReturn =>
       "ERROR_VALIDATION_FOR_EXCESS_STOCK_RETURN";
   String get validationForExcessStockAcceptReturn =>

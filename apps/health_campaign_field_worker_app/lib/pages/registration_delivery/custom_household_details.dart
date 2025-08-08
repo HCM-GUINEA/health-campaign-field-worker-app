@@ -20,8 +20,7 @@ import 'package:registration_delivery/models/entities/household.dart';
 import 'package:registration_delivery/router/registration_delivery_router.gm.dart';
 import 'package:registration_delivery/utils/constants.dart';
 import 'package:registration_delivery/utils/i18_key_constants.dart' as i18;
-import 'package:health_campaign_field_worker_app/utils/i18_key_constants.dart'
-    as i18_local;
+import '../../utils/i18_key_constants.dart' as i18_local;
 import 'package:registration_delivery/utils/utils.dart';
 import 'package:registration_delivery/widgets/back_navigation_help_header.dart';
 import 'package:registration_delivery/widgets/localized.dart';
@@ -49,6 +48,18 @@ class CustomHouseHoldDetailsPageState
     extends LocalizedState<CustomHouseHoldDetailsPage> {
   static const _dateOfRegistrationKey = 'dateOfRegistration';
   static const _memberCountKey = 'memberCount';
+  static const _children0To59Key = 'children0to59';
+  static const _children0To11Key = 'children0to11';
+  static const _children12To59Key = 'children12to59';
+  static const _currentCycleKey = 'currentCycle';
+   final currentCycle =
+    RegistrationDeliverySingleton().projectType?.cycles?.firstWhere(
+      (e) =>
+        (e.startDate) < DateTime.now().millisecondsSinceEpoch &&
+        (e.endDate) > DateTime.now().millisecondsSinceEpoch,
+      );
+      
+  
 
   // Define controllers
   final TextEditingController _pregnantWomenController =
@@ -163,6 +174,27 @@ class CustomHouseHoldDetailsPageState
                           final dateOfRegistration = form
                               .control(_dateOfRegistrationKey)
                               .value as DateTime;
+                          //  Read new values from form
+
+                          final children0to59 =
+                              form.control(_children0To59Key).value as int? ??
+                                  0;
+                          final children0to11 =
+                              form.control(_children0To11Key).value as int? ??
+                                  0;
+                          final children12to59 =
+                              form.control(_children12To59Key).value as int? ??
+                                  0;
+
+                          // Prepare additional fields
+                          final additionalFieldstoSave = [
+                            AdditionalField(
+                                IdentifierTypes.uniqueBeneficiaryID.toValue(),
+                                ''), // Placeholder for generated ID
+                            AdditionalField(_children0To59Key, children0to59),
+                            AdditionalField(_children0To11Key, children0to11),
+                            AdditionalField(_children12To59Key, children12to59),
+                          ];
 
                           registrationState.maybeWhen(
                             orElse: () {
@@ -180,6 +212,12 @@ class CustomHouseHoldDetailsPageState
                             ) async {
                               final String householdid =
                                   await generateHouseholdId();
+
+                              // Update householdid in additional fields ***
+                              additionalFieldstoSave[0] = AdditionalField(
+                                IdentifierTypes.uniqueBeneficiaryID.toValue(),
+                                householdid,
+                              );
                               var household = householdModel;
 
                               household ??= HouseholdModel(
@@ -249,12 +287,7 @@ class CustomHouseHoldDetailsPageState
                                   // id: householdid,
                                   additionalFields: HouseholdAdditionalFields(
                                       version: 1,
-                                      fields: [
-                                        AdditionalField(
-                                            IdentifierTypes.uniqueBeneficiaryID
-                                                .toValue(),
-                                            householdid)
-                                      ]));
+                                      fields: additionalFieldstoSave));
 
                               bloc.add(
                                 BeneficiaryRegistrationSaveHouseholdDetailsEvent(
@@ -276,6 +309,35 @@ class CustomHouseHoldDetailsPageState
                               loading,
                               isHeadOfHousehold,
                             ) {
+                              // In edit mode, we must preserve the existing beneficiary ID
+                              final beneficiaryId =
+                                  householdModel.additionalFields?.fields
+                                          .firstWhere(
+                                            (field) =>
+                                                field.key ==
+                                                IdentifierTypes
+                                                    .uniqueBeneficiaryID
+                                                    .toValue(),
+                                            orElse: () =>
+                                                const AdditionalField('', ''),
+                                          )
+                                          .value ??
+                                      '';
+
+                              // Re-create the list of fields to save, ensuring the existing ID is used
+                              final fieldsToSave = [
+                                AdditionalField(
+                                    IdentifierTypes.uniqueBeneficiaryID
+                                        .toValue(),
+                                    beneficiaryId),
+                                AdditionalField(
+                                    _children0To59Key, children0to59),
+                                AdditionalField(
+                                    _children0To11Key, children0to11),
+                                AdditionalField(
+                                    _children12To59Key, children12to59),
+                              ];
+
                               var household = householdModel.copyWith(
                                   memberCount: memberCount,
                                   address: addressModel,
@@ -303,9 +365,9 @@ class CustomHouseHoldDetailsPageState
                                       version: householdModel
                                               .additionalFields?.version ??
                                           1,
-                                      fields: [
-                                        //[TODO: Use pregnant women form value based on project config
-                                      ]));
+                                      fields: fieldsToSave
+                                      //[TODO: Use pregnant women form value based on project config
+                                      ));
 
                               bloc.add(
                                 BeneficiaryRegistrationUpdateHouseholdDetailsEvent(
@@ -412,72 +474,190 @@ class CustomHouseHoldDetailsPageState
                               ),
                             ),
                           ),
-                          householdDetailsShowcaseData
-                              .numberOfMembersLivingInHousehold
-                              .buildWith(
-                            child: ReactiveWrapperField(
-                              formControlName: _memberCountKey,
-                              builder: (field) => LabeledField(
-                                label: (RegistrationDeliverySingleton()
-                                            .householdType ==
-                                        HouseholdType.community)
-                                    ? localizations.translate(
-                                        i18.householdDetails
-                                            .noOfMembersCountCLFLabel,
-                                      )
-                                    : localizations.translate(
-                                        i18.householdDetails
-                                            .noOfMembersCountLabel,
-                                      ),
+                          // householdDetailsShowcaseData
+                          //     .numberOfMembersLivingInHousehold
+                          //     .buildWith(
+                          //   child: ReactiveWrapperField(
+                          //     formControlName: _memberCountKey,
+                          //     builder: (field) => LabeledField(
+                          //       label: (RegistrationDeliverySingleton()
+                          //                   .householdType ==
+                          //               HouseholdType.community)
+                          //           ? localizations.translate(
+                          //               i18.householdDetails
+                          //                   .noOfMembersCountCLFLabel,
+                          //             )
+                          //           : localizations.translate(
+                          //               i18.householdDetails
+                          //                   .noOfMembersCountLabel,
+                          //             ),
+                          //       isRequired: true,
+                          //       child: DigitNumericFormInput(
+                          //         inputFormatters: [
+                          //           FilteringTextInputFormatter.digitsOnly
+                          //         ],
+                          //         minValue: 1,
+                          //         maxValue: !isCommunity ? 30 : 1000000,
+                          //         maxLength: 5,
+                          //         step: 1,
+                          //         editable: isCommunity,
+                          //         controller:
+                          //             isCommunity ? _memberController : null,
+                          //         initialValue: isCommunity
+                          //             ? null
+                          //             : form
+                          //                 .control(_memberCountKey)
+                          //                 .value
+                          //                 .toString(),
+                          //         onChange: (value) {
+                          //           if (value.isEmpty) {
+                          //             _memberController.text = '1';
+                          //             form.control(_memberCountKey).value = 1;
+                          //             return;
+                          //           }
+                          //           // Remove leading zeros
+                          //           String newValue = value;
+
+                          //           if (value == '0' && isCommunity) {
+                          //             newValue = '1';
+                          //           }
+                          //           _memberController.text = newValue;
+                          //           form.control(_memberCountKey).value =
+                          //               int.parse(newValue);
+
+                          //           int memberCount =
+                          //               form.control(_memberCountKey).value;
+                          //           // if (memberCount <=
+                          //           //     pregnantWomen + children) {
+                          //           //   form.control(_memberCountKey).value =
+                          //           //       (children + pregnantWomen);
+                          //           //   _memberController.text =
+                          //           //       (children + pregnantWomen).toString();
+                          //           // }
+                          //         },
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          //[TODO: Use pregnant women form value based on project config
+                          // A - Number of children 0 to 59 months
+
+                          ReactiveWrapperField(
+                            formControlName: _children0To59Key,
+                            validationMessages: {
+                              'totalMismatch': (error) =>
+                                  localizations.translate(
+                                    i18_local.householdDetails
+                                        .totalChildrenCountMismatchError,
+                                  ),
+                              // "Total must be the sum of the two fields below",
+                            },
+                            builder: (field) {
+                              return LabeledField(
+                                label: localizations.translate(
+                                  i18_local.householdDetails
+                                      .numberOfChildren0To59MonthsLabel,
+                                ),
+                                // label: "Number of children 0 to 59 months (A)",
                                 isRequired: true,
                                 child: DigitNumericFormInput(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  minValue: 1,
-                                  maxValue: !isCommunity ? 30 : 1000000,
-                                  maxLength: 5,
+                                  initialValue:
+                                      (field.control.value ?? 0).toString(),
                                   step: 1,
-                                  editable: isCommunity,
-                                  controller:
-                                      isCommunity ? _memberController : null,
-                                  initialValue: isCommunity
-                                      ? null
-                                      : form
-                                          .control(_memberCountKey)
-                                          .value
-                                          .toString(),
+                                  minValue: 0,
+                                  errorMessage: field.errorText,
                                   onChange: (value) {
-                                    if (value.isEmpty) {
-                                      _memberController.text = '1';
-                                      form.control(_memberCountKey).value = 1;
-                                      return;
-                                    }
-                                    // Remove leading zeros
-                                    String newValue = value;
-
-                                    if (value == '0' && isCommunity) {
-                                      newValue = '1';
-                                    }
-                                    _memberController.text = newValue;
+                                    field.control.value =
+                                        int.tryParse(value) ?? 0;
+                                    // This line tells the form to re-run all its validators
+                                    field.control.parent
+                                        ?.updateValueAndValidity();
                                     form.control(_memberCountKey).value =
-                                        int.parse(newValue);
-
-                                    int memberCount =
-                                        form.control(_memberCountKey).value;
-                                    // if (memberCount <=
-                                    //     pregnantWomen + children) {
-                                    //   form.control(_memberCountKey).value =
-                                    //       (children + pregnantWomen);
-                                    //   _memberController.text =
-                                    //       (children + pregnantWomen).toString();
-                                    // }
+                                            field.control.value ?? 0;
                                   },
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                          //[TODO: Use pregnant women form value based on project config
+
+                          // B - Number of children 0 to 11 months
+
+                          ReactiveWrapperField(
+                            formControlName: _children0To11Key,
+                            builder: (field) {
+                              return LabeledField(
+                                label: localizations.translate(
+                                  i18_local.householdDetails
+                                      .numberOfChildren0To11MonthsLabel,
+                                ),
+                                // label: "Number of children 0 to 11 months (B)",
+                                isRequired: true,
+                                child: DigitNumericFormInput(
+                                  initialValue:
+                                      (field.control.value ?? 0).toString(),
+                                  step: 1,
+                                  minValue: 0,
+                                  onChange: (value) {
+                                    field.control.value =
+                                        int.tryParse(value) ?? 0;
+                                    // This line tells the form to re-run all its validators
+                                    field.control.parent
+                                        ?.updateValueAndValidity();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+
+                          // C - Number of children 12 to 59 months
+
+                          ReactiveWrapperField(
+                            formControlName: _children12To59Key,
+                            builder: (field) {
+                              return LabeledField(
+                                label: localizations.translate(
+                                  i18_local.householdDetails
+                                      .numberOfChildren12To59MonthsLabel,
+                                ),
+                                // label: "Number of children 12 to 59 months (C)",
+                                isRequired: true,
+                                child: DigitNumericFormInput(
+                                  initialValue:
+                                      (field.control.value ?? 0).toString(),
+                                  step: 1,
+                                  minValue: 0,
+                                  onChange: (value) {
+                                    field.control.value =
+                                        int.tryParse(value) ?? 0;
+                                    // This line tells the form to re-run all its validators
+                                    field.control.parent
+                                        ?.updateValueAndValidity();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          ReactiveWrapperField(
+                            formControlName: _currentCycleKey,
+                            builder: (field) {
+                              return LabeledField(
+                                label: localizations.translate(
+                                  i18.beneficiaryDetails.currentCycleLabel,
+                                ),
+                                // label: "Number of children 12 to 59 months (C)",
+                                
+                                child:  DigitTextFormInput(
+                                  errorMessage: field.errorText,
+                                  readOnly: true,
+                                  initialValue: form
+                                      .control(_currentCycleKey)
+                                      .value,
+                                ),
+                              );
+                            },
+                          ),
+
+                          
                         ]),
                   ),
                 ],
@@ -487,6 +667,26 @@ class CustomHouseHoldDetailsPageState
         },
       ),
     );
+  }
+
+  // *** Custom Validator ***
+  /// Validator that checks if the total number of children is the sum of the sub-categories.
+  Map<String, dynamic>? _validateChildCounts(AbstractControl<dynamic> control) {
+    final formGroup = control as FormGroup;
+    final a = formGroup.control(_children0To59Key).value as int? ?? 0;
+    final b = formGroup.control(_children0To11Key).value as int? ?? 0;
+    final c = formGroup.control(_children12To59Key).value as int? ?? 0;
+
+    // The validation fails if A is not equal to B + C
+    if (a != (b + c)) {
+      // Attaching the error to the 'A' field so the message appears there
+      formGroup.control(_children0To59Key).setErrors({'totalMismatch': true});
+    } else {
+      // If it's valid, clear the error
+      formGroup.control(_children0To59Key).removeError('totalMismatch');
+    }
+
+    return null;
   }
 
   FormGroup buildForm(BeneficiaryRegistrationState state) {
@@ -503,12 +703,45 @@ class CustomHouseHoldDetailsPageState
       create: (value) => DateTime.now(),
     );
 
+    //  Get initial values for children fields for editing
+    final additionalFields = household?.additionalFields?.fields;
+
+    int? getFieldValue(String key) {
+      final field = additionalFields?.firstWhere((f) => f.key == key,
+          orElse: () => AdditionalField(key, null));
+      if (field?.value != null && field!.value is int) {
+        return field.value;
+      } else if (field?.value != null && field!.value is String) {
+        return int.tryParse(field.value as String);
+      }
+      return 0; // Default to 0 if not found or invalid
+    }
+
+    final initialChildren0to59 = getFieldValue(_children0To59Key);
+    final initialChildren0to11 = getFieldValue(_children0To11Key);
+    final initialChildren12to59 = getFieldValue(_children12To59Key);
+
+    // Get current cycle name
+    final currentCycleName = currentCycle?.id.toString() ?? 'No active cycle';
+
     return fb.group(<String, Object>{
       _dateOfRegistrationKey:
           FormControl<DateTime>(value: registrationDate, validators: []),
       _memberCountKey: FormControl<int>(
         value: household?.memberCount ?? 1,
       ),
-    });
+      //  Add controls to the form group
+      _children0To59Key: FormControl<int>(
+          value: initialChildren0to59, validators: [Validators.required]),
+      _children0To11Key: FormControl<int>(
+          value: initialChildren0to11, validators: [Validators.required]),
+      _children12To59Key: FormControl<int>(
+          value: initialChildren12to59, validators: [Validators.required]),
+      _currentCycleKey: FormControl<String>(
+          value: currentCycleName),
+    }, [
+      //  Apply the custom validator to the whole form group
+      Validators.delegate((control) => _validateChildCounts(control)),
+    ]);
   }
 }

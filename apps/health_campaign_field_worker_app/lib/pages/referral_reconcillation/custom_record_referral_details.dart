@@ -14,6 +14,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:referral_reconciliation/models/entities/referral_recon_enums.dart';
 import 'package:referral_reconciliation/router/referral_reconciliation_router.gm.dart';
 import 'package:referral_reconciliation/utils/extensions/extensions.dart';
+import 'package:registration_delivery/registration_delivery.dart';
 import 'package:survey_form/survey_form.dart';
 
 import 'package:referral_reconciliation/utils/i18_key_constants.dart' as i18;
@@ -70,6 +71,17 @@ class _CustomRecordReferralDetailsPageState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.digitTextTheme(context);
+    final maxValidAgeCondition =  RegistrationDeliverySingleton().projectType!.cycles
+                                                      ?.where((e) =>
+                                                          (e.startDate!) <
+                                                              DateTime.now()
+                                                                  .millisecondsSinceEpoch &&
+                                                          (e.endDate!) >
+                                                              DateTime.now()
+                                                                  .millisecondsSinceEpoch)
+                                                      .firstOrNull
+                                                      ?.deliveries!.last.doseCriteria!.last.condition.toString();
+    final maxValidAge = int.tryParse(maxValidAgeCondition!.substring(maxValidAgeCondition.length - 2));                                                 
 
     return BlocBuilder<ReferralReconServiceDefinitionBloc,
         ReferralReconServiceDefinitionState>(
@@ -90,7 +102,7 @@ class _CustomRecordReferralDetailsPageState
                       false;
 
                   return ReactiveFormBuilder(
-                    form: () => buildForm(recordState),
+                    form: () => buildForm(recordState, maxValidAge!),
                     builder: (context, form, child) {
                       form.control(_referralReason).value =
                           recordState.mapOrNull(
@@ -875,10 +887,7 @@ class _CustomRecordReferralDetailsPageState
                                                 )
                                                 .replaceAll(
                                                   '{}',
-                                                  ReferralReconSingleton()
-                                                      .validIndividualAgeForCampaign
-                                                      .validMaxAge
-                                                      .toString(),
+                                                 (maxValidAge! - 1).toString(),
                                                 ),
                                             'min': (_) => localizations
                                                 .translate(
@@ -1096,7 +1105,7 @@ class _CustomRecordReferralDetailsPageState
     );
   }
 
-  FormGroup buildForm(RecordHFReferralState referralState) {
+  FormGroup buildForm(RecordHFReferralState referralState, int maxValidAge) {
     return fb.group(<String, Object>{
       _nameOfChildKey: FormControl<String>(
         value: referralState.mapOrNull(
@@ -1204,9 +1213,7 @@ class _CustomRecordReferralDetailsPageState
             ? [
                 Validators.required,
                 Validators.max<int>(
-                  ReferralReconSingleton()
-                      .validIndividualAgeForCampaign
-                      .validMaxAge,
+                  maxValidAge -1,
                 ),
                 Validators.min<int>(
                   ReferralReconSingleton()

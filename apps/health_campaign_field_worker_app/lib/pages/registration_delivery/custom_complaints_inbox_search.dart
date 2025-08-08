@@ -12,9 +12,9 @@ import 'package:complaints/utils/i18_key_constants.dart' as i18;
 import 'package:complaints/utils/utils.dart';
 import 'package:complaints/widgets/localized.dart';
 import 'package:flutter/services.dart';
-
+import '../../utils/i18_key_constants.dart' as i18_local;
 import '../../utils/upper_case.dart';
-
+import '../../utils/utils.dart' as local_utils;
 @RoutePage()
 class CustomComplaintsInboxSearchPage extends LocalizedStatefulWidget {
   const CustomComplaintsInboxSearchPage({
@@ -151,9 +151,13 @@ class CustomComplaintsInboxSearchPageState
                                     showErrors: (control) => control.invalid && control.touched,
                                     validationMessages: {
                                       'mobileNumber': (object) =>
-                                          localizations.translate(i18
+                                          localizations.translate(i18_local
                                               .individualDetails
-                                              .mobileNumberInvalidFormatValidationMessage),
+                                              .mobileNumberLengthValidationMessageUpdated),
+                                      'startsWith6': (object) =>
+                                    localizations.translate(i18_local
+                                        .individualDetails
+                                        .mobileNumberStartWith6ValidationMessageNewUpdated),
                                     },
                                     builder: (field) {
                                       return LabeledField(
@@ -170,7 +174,7 @@ class CustomComplaintsInboxSearchPageState
                                           ],
                                           onChange: (value)=>formGroup.control(_mobileNumber).value=value,
                                           errorMessage: field.errorText,
-                                          maxLength: 8,
+                                          maxLength: 9,
                                         ),
                                       );
                                     }),
@@ -197,9 +201,15 @@ class CustomComplaintsInboxSearchPageState
         value: state.searchKeys?.complaintNumber,
       ),
       _mobileNumber: FormControl<String>(
-        validators: [Validators.delegate(
-                (validator) => CustomValidator.validMobileNumber(validator))],
+        validators: [
+          Validators.delegate(
+                (validator) => local_utils.CustomValidator.validMobileNumberNineDigits(validator)),
+                
+          Validators.delegate((validator) =>
+              local_utils.CustomValidator.startsWith6(validator)),
+                ],
         value: state.searchKeys?.complainantMobileNumber,
+        
       ),
     });
   }

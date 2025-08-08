@@ -393,18 +393,18 @@ class CustomDoseAdministeredPageState
                                   minLeadingWidth: 24,
                                   minVerticalPadding: 0,
                                 ),
-                                ListTile(
-                                  title: Text(
-                                    localizations.translate(
-                                      i18_local.deliverIntervention
-                                          .doseCompletionChecksText6,
-                                    ),
-                                  ),
-                                  leading: const Text("4."),
-                                  horizontalTitleGap: 0,
-                                  minLeadingWidth: 24,
-                                  minVerticalPadding: 0,
-                                ),
+                                // ListTile(
+                                //   title: Text(
+                                //     localizations.translate(
+                                //       i18_local.deliverIntervention
+                                //           .doseCompletionChecksText6,
+                                //     ),
+                                //   ),
+                                //   leading: const Text("4."),
+                                //   horizontalTitleGap: 0,
+                                //   minLeadingWidth: 24,
+                                //   minVerticalPadding: 0,
+                                // ),
                               ],
                             ),
                           ]);

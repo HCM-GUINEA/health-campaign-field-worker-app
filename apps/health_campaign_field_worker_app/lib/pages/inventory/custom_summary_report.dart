@@ -48,11 +48,13 @@ class _CustomSummaryReportState
 
   static const _dateKey = 'dateKey';
   static const _registeredChildrenKey = 'registeredChildren';
+  static const _registeredHHKey = 'registeredHH';
   static const _administeredChildrenKey = 'administeredChildren';
   static const _refusalsCasesKey = 'refusalsCases';
   static const _usedTablet_3_11monthKey = 'usedTablet3_11month';
   static const _usedTablet_12_59monthKey = 'usedTablet12s_59month';
-  static const _zeroDoseChildrenKey = 'zeroDoseChildren';
+  static const _remainingTablet_3_11monthKey = 'remainingTablet3_11month';
+  static const _remainingTablet_12_59monthKey = 'remainingTablet12_59month';
 
   FormGroup _form() {
     return fb.group({});
@@ -112,11 +114,18 @@ class _CustomSummaryReportState
                               width: 120,
                             ),
                             DigitGridColumn(
+                              label: localizations.translate(
+                                  i18Local.homeShowcase.registeredHouseholds),
+                              key: _registeredHHKey,
+                              width: 180,
+                            ),
+                            DigitGridColumn(
                               label: localizations.translate(i18Local
                                   .homeShowcase.summaryReportRegistredChildren),
                               key: _registeredChildrenKey,
                               width: 180,
                             ),
+                            
                             DigitGridColumn(
                               label: localizations.translate(i18Local
                                   .homeShowcase
@@ -143,10 +152,16 @@ class _CustomSummaryReportState
                               width: 180,
                             ),
                             DigitGridColumn(
-                              label: localizations.translate(i18Local
-                                  .homeShowcase.summaryReportZeroDoseChildren),
-                              key: _zeroDoseChildrenKey,
-                              width: 180,
+                              label: localizations.translate(
+                                  i18Local.homeShowcase.tablets_3_11MonthsRemaining),
+                              key: _remainingTablet_3_11monthKey,
+                              width: 200,
+                            ),
+                            DigitGridColumn(
+                              label: localizations.translate(
+                                  i18Local.homeShowcase.tablets_12_59MonthsRemaining),
+                              key: _remainingTablet_12_59monthKey,
+                              width: 200,
                             ),
                           ],
                           rows: [
@@ -156,7 +171,13 @@ class _CustomSummaryReportState
                                 [
                                   DigitGridCell(
                                     key: _dateKey,
-                                    value: entry.key,
+                                    value: _formatDateForDisplay(entry.key),
+                                  ),
+                                  DigitGridCell(
+                                    key: _registeredHHKey,
+                                    value:
+                                        (entry.value[Constants.registeredHH] ?? 0)
+                                            .toString(),
                                   ),
                                   DigitGridCell(
                                     key: _registeredChildrenKey,
@@ -164,6 +185,7 @@ class _CustomSummaryReportState
                                         (entry.value[Constants.registered] ?? 0)
                                             .toString(),
                                   ),
+                                  
                                   DigitGridCell(
                                     key: _administeredChildrenKey,
                                     value:
@@ -192,9 +214,15 @@ class _CustomSummaryReportState
                                             .toString(),
                                   ),
                                   DigitGridCell(
-                                    key: _zeroDoseChildrenKey,
+                                    key: _remainingTablet_3_11monthKey,
                                     value:
-                                        (entry.value[Constants.zeroDose] ?? 0)
+                                        (entry.value[Constants.remaining_tablet_3_11] ?? 0)
+                                            .toString(),
+                                  ),
+                                  DigitGridCell(
+                                    key: _remainingTablet_12_59monthKey,
+                                    value:
+                                        (entry.value[Constants.remaining_tablet_12_59] ?? 0)
                                             .toString(),
                                   ),
                                 ],
@@ -211,6 +239,20 @@ class _CustomSummaryReportState
         },
       ),
     );
+  }
+
+
+  String _formatDateForDisplay(String dateKey) {
+    // Check if this is Day 6 (should have "Rattrapage" prefix)
+    if (dateKey.endsWith('Day6')) {
+      // Extract the date part (everything before " Day6")
+      final datePartEnd = dateKey.indexOf(' Day6');
+      if (datePartEnd != -1) {
+        final datePart = dateKey.substring(0, datePartEnd);
+        return '${localizations.translate(i18Local.homeShowcase.daySixPrefix)}\n$datePart Day6';
+      }
+    }
+    return dateKey;
   }
 }
 

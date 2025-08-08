@@ -242,7 +242,8 @@ class CustomReferBeneficiarySMCPageState
                                               reasons.join(","),
                                             ),
                                             const AdditionalField(
-                                                'referralType', 'smcReferred')
+                                                'referralType', 'smcReferred'),
+                                                ...getIndividualAdditionalFields(widget.individual)
                                           ],
                                         ),
                                       ),
@@ -329,18 +330,18 @@ class CustomReferBeneficiarySMCPageState
                                     );
                                     // TODO: Currently, it's been shifted to the zero dose flow
 
-                                    // context.read<DeliverInterventionBloc>().add(
-                                    //       DeliverInterventionSubmitEvent(
-                                    //         task: task,
-                                    //         isEditing: false,
-                                    //         boundaryModel: context.boundary,
-                                    //       ),
-                                    //     );
-                                    // final searchBloc =
-                                    //     context.read<SearchHouseholdsBloc>();
-                                    // searchBloc.add(
-                                    //   const SearchHouseholdsClearEvent(),
-                                    // );
+                                    context.read<DeliverInterventionBloc>().add(
+                                          DeliverInterventionSubmitEvent(
+                                            task: task,
+                                            isEditing: false,
+                                            boundaryModel: context.boundary,
+                                          ),
+                                        );
+                                    final searchBloc =
+                                        context.read<SearchHouseholdsBloc>();
+                                    searchBloc.add(
+                                      const SearchHouseholdsClearEvent(),
+                                    );
 
                                     final reloadState =
                                         context.read<HouseholdOverviewBloc>();
@@ -356,17 +357,11 @@ class CustomReferBeneficiarySMCPageState
                                       },
                                     ).then(
                                       (value) => context.router.popAndPush(
-                                        ZeroDoseCheckRoute(
+                                        CustomHouseholdAcknowledgementRoute(
+                                          enableViewHousehold: true,
                                           eligibilityAssessmentType:
-                                              EligibilityAssessmentType.smc,
-                                          isAdministration: false,
-                                          task: task,
+                                              EligibilityAssessmentType.vas,
                                         ),
-                                        // CustomHouseholdAcknowledgementRoute(
-                                        //   enableViewHousehold: true,
-                                        //   eligibilityAssessmentType:
-                                        //       EligibilityAssessmentType.vas,
-                                        // ),
                                       ),
                                     );
                                   }
